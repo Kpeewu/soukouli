@@ -12,5 +12,7 @@
         </main>
 
         @include('components.footer')
+
+        @include('components.changelog-modal')
     </div>
 @endsection

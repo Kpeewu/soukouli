@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\AnneeScolaire;
+use App\Models\Cycle;
+use App\Models\ExamenOfficiel;
 use App\Models\Matiere;
 use App\Models\Promotion;
 use App\Models\Trimestre;
@@ -16,53 +18,74 @@ class PromotionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        $annee_1 = AnneeScolaire::find(1);
+        $anneeScolaire = AnneeScolaire::where('courant', true)->first();
 
+        if (!$anneeScolaire) {
+            $this->command->error('Aucune annee scolaire courante trouvee!');
+            return;
+        }
 
-        $tab_promotions = [];
+        // Recuperer tous les cycles
+        $cycles = Cycle::orderBy('ordre')->get();
 
-        $promotion_1 = Promotion::create([
-            'nom' => '6',
-            'annee_scolaire_id' => $annee_1->id
-        ]);
+        // Matieres par cycle
+        $matieresParCycle = [
+            'MATERNELLE' => ['Lecture', 'Ecriture', 'Calcul', 'Arts Plastiques', 'Musique', 'Education Physique et Sportive'],
+            'PRIMAIRE' => ['Francais', 'Mathematiques', 'Eveil Scientifique', 'Histoire-Geographie', 'Education Civique et Morale', 'Education Physique et Sportive', 'Arts Plastiques', 'Musique'],
+            'COLLEGE' => ['Francais', 'Mathematiques', 'Anglais', 'Physique-Chimie', 'Sciences de la Vie et de la Terre', 'Histoire-Geographie', 'Education Civique et Morale', 'Education Physique et Sportive'],
+            'LYCEE' => ['Francais', 'Mathematiques', 'Anglais', 'Physique-Chimie', 'Sciences de la Vie et de la Terre', 'Histoire-Geographie', 'Philosophie', 'Education Physique et Sportive'],
+        ];
 
-        array_push($tab_promotions, $promotion_1);
+        foreach ($cycles as $cycle) {
+            $promotionNames = $cycle->getDefaultPromotions();
+            $promotionsAvecExamen = $cycle->getPromotionsAvecExamen();
 
-        $promotion_2 = Promotion::create([
-            'nom' => '5',
-            'annee_scolaire_id' => $annee_1->id
-        ]);
+            foreach ($promotionNames as $promotionName) {
+                // Determiner si cette promotion a un examen officiel
+                $aExamen = in_array($promotionName, $promotionsAvecExamen);
+                $examenOfficiel = null;
 
-        array_push($tab_promotions, $promotion_2);
+                if ($aExamen) {
+                    $examenOfficiel = ExamenOfficiel::where('cycle_id', $cycle->id)
+                        ->where('niveau_requis', $promotionName)
+                        ->first();
+                }
 
-        $promotion_3 = Promotion::create([
-            'nom' => '4',
-            'annee_scolaire_id' => $annee_1->id
-        ]);
+                // Creer la promotion
+                $promotion = Promotion::firstOrCreate(
+                    [
+                        'nom' => $promotionName,
+                        'annee_scolaire_id' => $anneeScolaire->id,
+                        'cycle_id' => $cycle->id,
+                    ],
+                    [
+                        'type_periode' => 'trimestre',
+                        'a_examen_officiel' => $aExamen,
+                        'examen_officiel_id' => $examenOfficiel?->id
+                    ]
+                );
 
-        array_push($tab_promotions, $promotion_3);
+                // Creer les trimestres si pas encore crees
+                if ($promotion->trimestres()->count() === 0) {
+                    $nombrePeriodes = $promotion->type_periode === 'semestre' ? 2 : 3;
+                    $typePeriode = $promotion->type_periode === 'semestre' ? 'Semestre' : 'Trimestre';
 
-        $promotion_4 = Promotion::create([
-            'nom' => '3',
-            'annee_scolaire_id' => $annee_1->id
-        ]);
+                    for ($j = 1; $j <= $nombrePeriodes; $j++) {
+                        Trimestre::create([
+                            'intitule' => $typePeriode . ' ' . $j . ' ' . $promotionName . ' ' . $anneeScolaire->annee,
+                            'promotion_id' => $promotion->id
+                        ]);
+                    }
+                }
 
-        array_push($tab_promotions, $promotion_4);
-
-       
-
-        // création des trimestres de chaque niveau
-        foreach ($tab_promotions as $promotion) {
-            for ($i = 1; $i < 4; $i++) {
-
-                $trimestre = Trimestre::create([
-                    'intitule' => 'Trimestre ' . $i . ' ' . $promotion->nom . 'eme ' . $promotion->anneeScolaire->annee,
-                    'promotion_id' => $promotion->id
-                ]);
-                //$promotion->trimestres()->attach($trimestre);
+                // Attacher les matieres a la promotion
+                if (isset($matieresParCycle[$cycle->code])) {
+                    $matieres = Matiere::whereIn('intitule', $matieresParCycle[$cycle->code])->get();
+                    $promotion->matieres()->syncWithoutDetaching($matieres->pluck('id'));
+                }
             }
 
+            $this->command->info("Promotions creees pour le cycle: {$cycle->nom}");
         }
     }
 }

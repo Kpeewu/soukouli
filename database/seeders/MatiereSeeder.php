@@ -13,10 +13,32 @@ class MatiereSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $matieres = [
+            // Matieres communes
+            'Mathematiques',
+            'Francais',
+            'Anglais',
+            'Sciences de la Vie et de la Terre',
+            'Physique-Chimie',
+            'Histoire-Geographie',
+            'Education Civique et Morale',
+            'Education Physique et Sportive',
+            'Arts Plastiques',
+            'Musique',
+            // Matieres specifiques
+            'Philosophie',
+            'Espagnol',
+            'Allemand',
+            'Informatique',
+            'Economie',
+            'Lecture',
+            'Ecriture',
+            'Calcul',
+            'Eveil Scientifique',
+        ];
 
-        // Matiere::create([
-        //     'intitule' => 'Mathématiques'
-        // ]);
+        foreach ($matieres as $matiere) {
+            Matiere::firstOrCreate(['intitule' => $matiere]);
+        }
     }
 }

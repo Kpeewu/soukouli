@@ -39,7 +39,7 @@ Travail -Liberté-Patrie\\
 \vspace{0cm}
 \begin{center}
 \huge
-\textbf{Liste des élèves de @latex(substr($classe->nom, 0, 6)) }
+\textbf{Liste des élèves de @latex($classe->nom) }
 \end{center}
 
 \vspace{0.5cm}

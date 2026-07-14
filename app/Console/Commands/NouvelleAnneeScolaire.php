@@ -2,12 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AnneeScolaire;
-use App\Models\Classe;
-use App\Models\Promotion;
-use App\Models\Trimestre;
-use Carbon\Carbon;
+use App\Services\AnneeScolaireGenerationService;
 use Illuminate\Console\Command;
+use RuntimeException;
 
 class NouvelleAnneeScolaire extends Command
 {
@@ -23,63 +20,42 @@ class NouvelleAnneeScolaire extends Command
      *
      * @var string
      */
-    protected $description = 'Cette commande permet de rajouter une nouvelle année scolaire et de passer à celle-ci';
+    protected $description = 'Cette commande permet de rajouter une nouvelle annee scolaire et de passer a celle-ci';
+
+    public function __construct(private AnneeScolaireGenerationService $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        //
-        $aujourdHui = Carbon::now();
-
-
-
-        // Changement d'année scolaire chaque 31 Août
-
-
-        $currentAnneeScolaire = AnneeScolaire::getAnneeScolaire();
-        if ($currentAnneeScolaire) {
-
-            // vérifier si l'année suivante existe
-            $nextYear = AnneeScolaire::where('annee', '=', $aujourdHui->year . '-' . $aujourdHui->year + 1)->first();
-
-
-            if ($nextYear === null) {
-
-
-                $currentAnneeScolaire->update(['courant' => false]);
-                $currentAnneeScolaire->save();
-
-
-
-                // Créez une nouvelle année scolaire et activez-la
-                $newAnneeScolaire = AnneeScolaire::create(['annee' => $aujourdHui->year   . '-' . $aujourdHui->year + 1, 'courant' => true]);
-
-                // Création automatique des niveaux, trimestres et classes de la nouvelle année scolaire
-                // création des promotions
-                for ($i = 6; $i > 2; $i--) {
-                    $promotion = Promotion::create([
-                        'nom' => $i,
-                        'annee_scolaire_id' => $newAnneeScolaire->id
-                    ]);
-
-                    // création des trimestres
-                    for ($j = 1; $j < 4; $j++) {
-
-                        Trimestre::create([
-                            'intitule' => 'Trimestre ' . $j . ' ' . $promotion->nom . 'eme ' . $promotion->anneeScolaire->annee,
-                            'promotion_id' => $promotion->id
-                        ]);
-                    }
-
-                    // création des classes
-                    Classe::create([
-                        'nom' => $promotion->nom . 'eme A' . ' ' . $promotion->anneeScolaire->annee,
-                        'promotion_id' => $promotion->id
-                    ]);
-                }
+        try {
+            $stats = $this->service->genererAnneeSuivante();
+        } catch (RuntimeException $e) {
+            if (str_contains($e->getMessage(), 'Aucune année scolaire courante')) {
+                $this->error($e->getMessage());
+            } else {
+                $this->warn($e->getMessage());
             }
+            return;
         }
+
+        $this->info('Creation de la nouvelle annee scolaire...');
+        $this->line("  -> {$stats['nb_configurations_frais']} configurations de frais copiees");
+        $this->line("  -> {$stats['nb_tranches']} tranches de paiement copiees");
+        if ($stats['nb_sessions_examen'] > 0) {
+            $this->line("  -> {$stats['nb_sessions_examen']} sessions d'examen copiees");
+        }
+        $this->line("  -> {$stats['nb_associations_matieres']} associations matiere-promotion copiees");
+        $this->line("  -> {$stats['nb_cours']} cours crees (professeurs repris de l'annee precedente)");
+
+        $this->info('Nouvelle annee scolaire ' . $stats['nouvelle_annee']->annee . ' creee avec succes.');
+        $this->info('- Promotions et classes creees pour tous les cycles');
+        $this->info('- Configurations de frais copiees');
+        $this->info('- Sessions d\'examen copiees');
+        $this->info('- Matieres et cours copies');
     }
 }

@@ -10,7 +10,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Cours</li>
-                        <li class="breadcrumb-item">{{ substr($cours->classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{$cours->classe->nom }}</li>
                         <li class="breadcrumb-item"><a class="link-fx" href="#">{{ $cours->matiere->intitule }}</a>
                         </li>
                     </ol>
@@ -50,7 +50,13 @@
 
         <div class="block block-rounded p-lg-5 p-3 mt-5">
 
-            <form action="{{ route('cours.update', ['cours' => $cours->id]) }}" method="post">
+            @unless ($canManage)
+                <div class="alert alert-info">
+                    Consultation uniquement : seuls les secrétaires de cycle peuvent modifier ce cours.
+                </div>
+            @endunless
+
+            <form action="{{ route('cours.update', ['cours' => $cours]) }}" method="post">
                 @csrf
                 <h3>{{ $cours->matiere->intitule }}</h3>
 
@@ -63,8 +69,10 @@
                         </div>
                         <div class="form-group col-12 col-lg-4">
                             <label for="intitule">Professeur</label>
-                            <select class="form-control form-control-alt" id="professeur_id" name="professeur_id"
-                                style="width: 100%;" data-placeholder="Choisissez un professeur">
+                            <select class="js-select2 form-control form-control-alt" id="professeur_id" name="professeur_id"
+                                style="width: 100%;" data-placeholder="Choisissez un professeur"
+                                @disabled(!$canManage)>
+                                <option></option>
                                 @foreach ($professeurs as $professeur)
                                     <option value="{{ $professeur->id }}"
                                         @if ($cours->professeur) @if ($professeur->id === $cours->professeur->id) selected @endif
@@ -76,13 +84,15 @@
                         <div class="form-group col-12 col-lg-2">
                             <label for="coefficient">Coefficient</label>
                             <input type="number" class="form-control form-control-alt" id="coefficient" name="coefficient"
-                                placeholder="Coefficient" value="{{ $cours->coefficient }}" />
+                                placeholder="Coefficient" value="{{ $cours->coefficient }}" @disabled(!$canManage) />
                         </div>
                     </div>
                 </div>
-                <div class="d-flex mt-5">
-                    <button class="btn btn-success" type="submit">Enregistrer modifications</button>
-                </div>
+                @if ($canManage)
+                    <div class="d-flex mt-5">
+                        <button class="btn btn-success" type="submit">Enregistrer modifications</button>
+                    </div>
+                @endif
 
             </form>
         </div>

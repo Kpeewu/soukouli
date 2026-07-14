@@ -6,12 +6,12 @@
         <div class="content content-full">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
-                    Liste des classes de {{ $promotion->nom }}eme
+                    Liste des classes de {{ $promotion->nom }}
                 </h1>
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Classes</li>
-                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ $promotion->nom }}eme</a>
+                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ $promotion->nom }}</a>
                         </li>
                     </ol>
                 </nav>
@@ -56,9 +56,11 @@
         <div class="block block-rounded">
 
             <div class="block-header">
-                <h3 class="block-title">Liste des classe de {{ $promotion->nom }}eme</h3>
-                <a class="btn btn-success" href="{{ route('classe.create', $promotion->id) }}"><i
-                        class="si si-chalkboard"></i> Nouvelle classe</a>
+                <h3 class="block-title">Liste des classe de {{ $promotion->nom }}</h3>
+                @if($canManage)
+                    <a class="btn btn-success" href="{{ route('classe.create', $promotion) }}"><i
+                            class="si si-chalkboard"></i> Nouvelle classe</a>
+                @endif
             </div>
 
             <div class="block-content">
@@ -88,7 +90,7 @@
                                             {{ count($classe->eleves) }} éleves
                                         </td>
                                         <td class="text-center">
-                                            <form action="{{ route('classe.destroy', $classe->id) }}" method="post"
+                                            <form action="{{ route('classe.destroy', $classe) }}" method="post"
                                                 onsubmit="return Confirm()">
                                                 @csrf
                                                 @method('delete')

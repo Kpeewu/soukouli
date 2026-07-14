@@ -5,12 +5,12 @@
         <div class="content content-full">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
-                    Cours de {{ $classe->nom }}
+                    Cours enseignés en {{ $classe->nom }}
                 </h1>
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Cours</li>
-                        <li class="breadcrumb-item">{{ $classe->promotion->nom }}eme</li>
+                        <li class="breadcrumb-item">{{ $classe->promotion->nom }}</li>
                         <li class="breadcrumb-item"><a class="link-fx" href="">{{ $classe->nom }}</a></li>
                     </ol>
                 </nav>
@@ -65,21 +65,25 @@
                                 <th style="width: 200px;">Libellé</th>
                                 <th class="text-center" style="width: 200px;">Professeur</th>
                                 <th class="text-center" style="width: 200px;">Coefficient</th>
-                                <th class="text-center" style="width: 200px;">Action</th>
+                                @if($canManage)
+                                    <th class="text-center" style="width: 200px;">Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             @if ($cours)
                                 @foreach ($cours as $cour)
                                     <tr @if(!$cour->professeur)class="table-warning"@endif>
-                                        <td>{{ Str::substr($cour->nom, 0, -17) }}</td>
+                                        <td>{{ $cour->nom }}</td>
                                         <td class="text-center text-primary" style="font-weight: 500;">@if($cour->professeur){{ $cour->professeur->nom }} {{ $cour->professeur->prenom }}@else Pas de professeur @endif</td>
                                         <td class="text-center">{{ $cour->coefficient }}</td>
-                                        <td class="text-center">
-                                            <a class="btn btn-success"
-                                                href="{{ route('cours.show', $cour->id) }}"><i
-                                                    class="si si-eye"></i> Détails</a>
-                                        </td>
+                                        @if($canManage)
+                                            <td class="text-center">
+                                                <a class="btn btn-success"
+                                                    href="{{ route('cours.show', $cour) }}"><i
+                                                        class="si si-eye"></i> Détails</a>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             @else

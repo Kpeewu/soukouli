@@ -21,13 +21,8 @@ class YearsServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
-
-
-        $anneesScolaires = AnneeScolaire::all()->sortByDesc('annee');
-
-        view()->composer('*', function ($view) use ($anneesScolaires) {
-            $view->with('anneesScolaires', $anneesScolaires);
+        view()->composer('*', function ($view) {
+            $view->with('anneesScolaires', AnneeScolaire::all()->sortByDesc('annee'));
         });
     }
 }

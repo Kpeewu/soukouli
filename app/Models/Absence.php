@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasHashidRouting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Absence extends Model
 {
-    use HasFactory;
+    use HasFactory, HasHashidRouting;
 
     protected $fillable = [
         'date',

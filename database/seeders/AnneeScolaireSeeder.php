@@ -13,12 +13,12 @@ class AnneeScolaireSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $currentYear = date('Y') - 1;
+        $nextYear = $currentYear + 1;
 
-        AnneeScolaire::create([
-            'annee' => '2023-2024',
-            'courant' => true
-        ]);
-
+        AnneeScolaire::firstOrCreate(
+            ['annee' => "{$currentYear}-{$nextYear}"],
+            ['courant' => true]
+        );
     }
 }

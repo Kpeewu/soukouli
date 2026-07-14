@@ -26,13 +26,23 @@
         <!-- Right Section -->
         <div class="d-flex align-items-center">
 
-            <div>
+            @php
+                $anneeActiveId = \App\Models\AnneeScolaire::getAnneeScolaireActive()?->id;
+                $anneeReelleId = \App\Models\AnneeScolaire::getAnneeScolaire()?->id;
+                $anneeReelleLabel = \App\Models\AnneeScolaire::getAnneeScolaire()?->annee;
+            @endphp
+            <div class="d-flex align-items-center">
                 <select class="form-control" id="change-year">
                     @foreach ($anneesScolaires as $anneeScolaire)
-                        <option value="{{ $anneeScolaire->id }}"@if ($anneeScolaire->courant === true) selected @endif>
+                        <option value="{{ $anneeScolaire->hashid }}"@if ($anneeScolaire->id === $anneeActiveId) selected @endif>
                             {{ $anneeScolaire->annee }}</option>
                     @endforeach
                 </select>
+                @if ($anneeActiveId !== $anneeReelleId)
+                    <span class="badge badge-warning ml-1" title="Année réelle en cours : {{ $anneeReelleLabel }}">
+                        Consultation : année archivée
+                    </span>
+                @endif
             </div>
 
 
@@ -52,18 +62,13 @@
                         <img class="img-avatar img-avatar48 img-avatar-thumb" src="{{ asset('/assets/media/avatars/avatar10.jpg') }}"
                             alt="">
                         <p class="mt-2 mb-0 text-white font-w500">{{ Auth::user()->username }}</p>
-                        <p class="mb-0 text-white-50 font-size-sm">Directrice</p>
+                        <p class="mb-0 text-white-50 font-size-sm">{{ Auth::user()->roleLabelAccorde() }}</p>
                     </div>
                     <div class="p-2">
 
                         <a class="dropdown-item d-flex align-items-center justify-content-between"
-                            href="be_pages_generic_profile.html">
-                            <span class="font-size-sm font-w500">Profile</span>
-                            <span class="badge badge-pill badge-primary ml-2">1</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center justify-content-between"
-                            href="javascript:void(0)">
-                            <span class="font-size-sm font-w500">Settings</span>
+                            href="{{ route('profile.edit') }}">
+                            <span class="font-size-sm font-w500">Mon profil</span>
                         </a>
                         <div role="separator" class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}"

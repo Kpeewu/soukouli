@@ -39,7 +39,6 @@
     <script src="{{ asset('assets/js/plugins/toastr/toastr.min.js') }}"></script>
     <script src="{{ asset('assets/js/core/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/core/js.cookie.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/chart.js/Chart.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/oneui.core.min.js') }}"></script>
@@ -84,10 +83,10 @@
     <script>
         // changement de l'année dans l'application
         $("#change-year").on("change", function(e) {
-            let annee_id = e.target.value
+            let anneeHashid = e.target.value
             $.ajax({
                 type: 'GET',
-                url: `/changeYear/${annee_id}`,
+                url: `/changeYear/${anneeHashid}`,
                 success: function(response) {
                     // Vérifiez si la requête a réussi du côté serveur
                     if (response.success) {
@@ -99,8 +98,6 @@
                 },
                 error: function(xhr, status, error) {
                     // Gérer les erreurs de requête Ajax
-                    console.log(`status ${status}`)
-                    console.log(`error: ${error}`)
                 }
             })
         })

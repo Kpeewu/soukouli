@@ -7,7 +7,7 @@
         <!-- Main Container -->
         <main id="main-container">
             <!-- Page Content -->
-            <div class="bg-image" style="background-image: url('{{ asset('assets/images/primaire.jpg') }}');">
+            <div class="bg-image" style="background-image: url('{{ $schoolSettings['login_background_url'] ?? asset('assets/images/background.png') }}');">
                 <div class="hero-static d-flex align-items-center">
                     <div class="w-100">
                         <!-- Unlock Section -->
@@ -19,14 +19,14 @@
                                         <!---- Header ---->
                                         <div class="text-center">
                                             <div class="d-flex justify-content-center py-5">
-                                                <img style="width: 125px;" src="{{ asset('assets/images/logo2.png') }}"
-                                                    alt="" srcset="">
+                                                <img style="width: 125px;" src="{{ $schoolSettings['school_logo_url'] ?? asset('assets/images/logo.png') }}"
+                                                    alt="{{ $schoolSettings['school_name'] ?? 'Logo' }}" srcset="">
                                             </div>
                                             <h1 class="h4 mb-1">
                                                 Connexion
                                             </h1>
                                             <h2 class="h6 font-w400 text-muted mb-3">
-                                                CPL Mon Avenir
+                                                {{ $schoolSettings['school_name'] ?? 'Mon Avenir' }}
                                             </h2>
                                         </div>
                                         <!-- END Header -->
@@ -85,7 +85,7 @@
 
                         <!-- Footer -->
                         <div class="font-size-sm text-center text-white py-3">
-                            <strong>Soukouli v1.0</strong> &copy; <span data-toggle="year-copy"></span>
+                            <strong>{{ $schoolSettings['system_name'] ?? 'Soukouli' }} v{{ $schoolSettings['system_version'] ?? '1.0' }}</strong> &copy; <span data-toggle="year-copy"></span>
                         </div>
                         <!-- END Footer -->
                     </div>

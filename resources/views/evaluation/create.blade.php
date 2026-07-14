@@ -11,7 +11,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Evaluation</li>
-                        <li class="breadcrumb-item">{{ $promotion->nom }}eme</li>
+                        <li class="breadcrumb-item">{{ $promotion->nom }}</li>
                         <li class="breadcrumb-item">{{ $matiere->intitule }}</li>
                         <li class="breadcrumb-item"><a class="link-fx"
                                 href="">{{ substr($trimestre->intitule, 0, 11) }}</a></li>
@@ -61,7 +61,7 @@
                 @csrf
                 <div class="d-flex mx-0 px-0 mb-5 justify-content-between align-items-center">
                     <h3 class="m-0">Nouvelle évaluation de {{ $matiere->intitule }}</h3>
-                    <a href="{{ route('evaluation_matieres', $promotion->id) }}" class="btn btn-secondary"><i
+                    <a href="{{ route('evaluation_matieres', $promotion) }}" class="btn btn-secondary"><i
                             class="fa fa-angle-left" aria-hidden="true"></i> Retour</a>
                 </div>
 
@@ -106,18 +106,20 @@
                 </div>
 
 
-                <ul class="nav nav-tabs nav-tabs-alt" data-toggle="tabs" role="tablist">
+                <ul class="nav nav-tabs nav-tabs-alt" role="tablist">
                     @foreach ($classes as $classe)
                         <li class="nav-item">
-                            <a class="nav-link"
-                                href="#classe{{ $classe['classe']->id }}">{{ substr($classe['classe']->nom, 0, 6) }}</a>
+                            <a class="nav-link @if ($loop->first) active @endif" data-toggle="tab"
+                                href="#classe{{ $classe['classe']->id }}"
+                                role="tab">{{ $classe['classe']->nom }}</a>
                         </li>
                     @endforeach
                 </ul>
                 <div class="block-content tab-content">
                     @foreach ($classes as $classe)
-                        <div class="tab-panel" id="classe{{ $classe['classe']->id }}" role="tabpanel">
-                            <h4 class="font-w400">Classe de {{ substr($classe['classe']->nom, 0, 6) }}</h4>
+                        <div class="tab-pane fade @if ($loop->first) show active @endif"
+                            id="classe{{ $classe['classe']->id }}" role="tabpanel">
+                            <h4 class="font-w400">Classe de {{ $classe['classe']->nom }}</h4>
                             @foreach ($classe['eleves'] as $eleve)
                                 <div class="row mx-0 px-0">
 
@@ -150,7 +152,6 @@
                                     </div>
 
                                 </div>
-
                                 <hr />
                             @endforeach
                         </div>
@@ -181,9 +182,7 @@
 
         notes_fields.forEach(field => {
             field.oninput = () => {
-                console.log(field.value)
                 if (parseInt(bareme.value) < parseInt(field.value)) {
-                    console.log(bareme.value)
                     field.nextElementSibling.style.display = 'block'
                 } else {
                     field.nextElementSibling.style.display = 'none'

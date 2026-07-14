@@ -66,27 +66,24 @@
                     <div class="col-12 py-3">
                         <div class="row justify-content-center align-items-center mx-0 px-0 my-4">
                             <!-- Affichage du nom de l'élève -->
-                            <label class="col-4 col-lg-2">Nom de la matière</label>
+                            <label class="col-4 col-lg-4">Nom de la matière</label>
 
                             <!-- Champ pour le groupe -->
-                            <input type="text" class="form-control form-control-alt col-8 col-lg-4" name="intitule"
+                            <input type="text" class="form-control form-control-alt col-8 col-lg-5" name="intitule"
                                 required />
 
                         </div>
                         <div class="row justify-content-center align-items-center mx-0 px-0">
                             <!-- Affichage du nom de l'élève -->
-                            <label class="col-4 col-lg-2">Niveaux d'enseignements</label>
+                            <label class="col-8 col-lg-4">Niveaux d'enseignements</label>
 
-                            <div class="d-flex col-8 col-lg-4">
-                                @foreach ($promotions as $promotion)
-                                    <div class="custom-control custom-checkbox custom-control-inline">
-                                        <input type="checkbox" class="custom-control-input"
-                                            id="example-checkbox-custom-inline{{ $promotion->id }}" name="promotions[]"
-                                            value="{{ $promotion->id }}" />
-                                        <label class="custom-control-label"
-                                            for="example-checkbox-custom-inline{{ $promotion->id }}">{{ $promotion->nom }}eme</label>
-                                    </div>
-                                @endforeach
+                            <div class="col-8 col-lg-5 px-0">
+                                <select class="js-select2 form-control" name="promotions[]" multiple="multiple"
+                                    style="width: 100%;" data-placeholder="Choisissez les niveaux d'enseignement...">
+                                    @foreach ($promotions as $promotion)
+                                        <option value="{{ $promotion->id }}">{{ $promotion->nom }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                         </div>
