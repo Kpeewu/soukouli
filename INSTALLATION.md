@@ -60,13 +60,13 @@ Vous avez besoin de 3 fichiers/dossiers, disponibles dans le dépôt du projet :
 Le plus simple est de récupérer l'ensemble du dépôt :
 
 ```bash
-git clone https://github.com/toureydaou/CPLMonAvenirApp.git soukouli
+git clone https://github.com/Kpeewu/soukouli.git soukouli
 cd soukouli
 ```
 
 > Si `git` n'est pas installé sur votre machine, vous pouvez aussi télécharger le dépôt sous forme d'archive ZIP depuis la page GitHub du projet ("Code" > "Download ZIP"), puis l'extraire.
 
-Vous n'avez pas besoin de construire l'application vous-même : elle est déjà prête à l'emploi sur le registre public Docker Hub (`toureydaou/soukouli`), et sera téléchargée automatiquement au démarrage.
+Vous n'avez pas besoin de construire l'application vous-même : elle est déjà prête à l'emploi sur le registre public Docker Hub (`kpeewu/soukouli`), et sera téléchargée automatiquement au démarrage.
 
 ---
 
