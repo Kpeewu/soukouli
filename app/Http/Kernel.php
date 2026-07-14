@@ -66,5 +66,18 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+
+        // Middlewares pour la gestion des cycles
+        'filter.cycle' => \App\Http\Middleware\FilterByCycle::class,
+        'check.cycle.access' => \App\Http\Middleware\CheckCycleAccess::class,
+        'deny.admin' => \App\Http\Middleware\DenyAdminAccess::class,
+
+        // Middlewares Spatie Laravel-Permission (v6+)
+        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+
+        // Middleware pour vérifier l'accès du professeur aux cours
+        'check.professeur.cours' => \App\Http\Middleware\CheckProfesseurCours::class,
     ];
 }

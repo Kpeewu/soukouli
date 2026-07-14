@@ -10,7 +10,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Evaluation</li>
-                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ $promotion->nom }}eme</a></li>
+                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ $promotion->nom }}</a></li>
                     </ol>
                 </nav>
             </div>
@@ -58,11 +58,11 @@
 
         <div class="block block-rounded">
             <div class="block-header">
-                <h3 class="block-title">Liste des matières de {{ $promotion->nom }}eme</h3>
+                <h3 class="block-title">Liste des matières de {{ $promotion->nom }}</h3>
             </div>
             <div class="block-content">
                 <p class="font-size-sm text-muted">
-                    Voici la liste des matières enseignées au niveau de la {{ $promotion->nom }}eme, choisissez la matière
+                    Voici la liste des matières enseignées au niveau de la {{ $promotion->nom }}, choisissez la matière
                     et le trimestre
                     dans lequel créer le devoir ou la composition.
                 </p>
@@ -92,7 +92,7 @@
                                                     aria-labelledby="dropdown-default-primary">
                                                     @foreach ($promotion->trimestres as $trimestre)
                                                         <a class="dropdown-item"
-                                                            href="{{ route('evaluation.create', ['promotion' => $promotion->id, 'matiere' => $matiere->id, 'trimestre' => $trimestre->id]) }}">{{ substr($trimestre->intitule, 0, 11) }}</a>
+                                                            href="{{ route('evaluation.create', ['promotion' => $promotion, 'matiere' => $matiere, 'trimestre' => $trimestre]) }}">{{ substr($trimestre->intitule, 0, 11) }}</a>
                                                     @endforeach
                                                 </div>
                                             </div>

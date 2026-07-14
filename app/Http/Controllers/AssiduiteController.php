@@ -5,11 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Assiduite;
 use App\Models\Classe;
 use App\Models\Eleve;
+use App\Traits\FiltersByCycle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AssiduiteController extends Controller
 {
-    //
+    use FiltersByCycle;
+
+    /**
+     * Seuls les secretaires et les surveillants (de cycle ou general) peuvent
+     * modifier le comportement/l'assiduite d'un eleve, dans la limite de leur cycle.
+     */
+    private function authorizeManageAssiduite(Eleve $eleve): void
+    {
+        $user = Auth::user();
+        if ((!$user->isSecretaire() && !$user->isSurveillant()) || !$this->canAccessEleve($eleve)) {
+            abort(403, "Seuls les secrétaires et les surveillants peuvent modifier l'assiduité d'un élève.");
+        }
+    }
+
     public function index(Eleve $eleve, Classe $classe)
     {
 
@@ -28,6 +43,7 @@ class AssiduiteController extends Controller
             'eleve' => $eleve,
             'classe' => $classe,
             'assiduites' => $assiduites,
+            'canManage' => (Auth::user()->isSecretaire() || Auth::user()->isSurveillant()) && $this->canAccessEleve($eleve),
         ];
 
         return view('assiduite.index', $data);
@@ -35,6 +51,8 @@ class AssiduiteController extends Controller
 
     public function editComportement(Assiduite $assiduite, Classe $classe)
     {
+        $this->authorizeManageAssiduite($assiduite->eleve);
+
         $data = [
             'assiduite' => $assiduite,
             'classe' => $classe
@@ -45,6 +63,8 @@ class AssiduiteController extends Controller
 
     public function updateComportement(Request $request, Assiduite $assiduite)
     {
+        $this->authorizeManageAssiduite($assiduite->eleve);
+
         $url = url()->previous();
 
         $avertissement = $request->avertissement;

@@ -10,7 +10,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Evaluation</li>
-                        <li class="breadcrumb-item">{{ substr($evaluation->cours->classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{ $evaluation->cours->classe->nom }}</li>
                         <li class="breadcrumb-item">{{ $evaluation->cours->matiere->intitule }}</li>
                         <li class="breadcrumb-item"><a class="link-fx"
                                 href="">{{ substr($trimestre->intitule, 0, 11) }}</a></li>
@@ -50,19 +50,64 @@
             @endif
         @endif
 
+        <div class="block block-rounded">
+            <div class="block-header block-header-default">
+                <h3 class="block-title">Statistiques de l'évaluation</h3>
+            </div>
+            <div class="block-content pb-4">
+                <div class="row text-center">
+                    <div class="col-6 col-md-4 col-xl-2 mb-3 mb-xl-0">
+                        <div class="font-size-h3 font-w700">{{ $stats['effectif'] }}</div>
+                        <div class="text-muted font-size-sm">Élèves notés</div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl-2 mb-3 mb-xl-0">
+                        <div class="font-size-h3 font-w700">
+                            {{ $stats['moyenne'] !== null ? number_format($stats['moyenne'], 2) : '—' }}<span class="font-size-sm text-muted">/{{ $evaluation->note_maximale }}</span>
+                        </div>
+                        <div class="text-muted font-size-sm">Moyenne générale</div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl-2 mb-3 mb-xl-0">
+                        <div class="font-size-h3 font-w700 text-success">{{ $stats['nombre_moyennes'] }}</div>
+                        <div class="text-muted font-size-sm">Ont la moyenne</div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl-2 mb-3 mb-xl-0">
+                        <div class="font-size-h3 font-w700">
+                            {{ $stats['taux_reussite'] !== null ? $stats['taux_reussite'] . '%' : '—' }}
+                        </div>
+                        <div class="text-muted font-size-sm">Taux de réussite</div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl-2 mb-3 mb-xl-0">
+                        <div class="font-size-h3 font-w700 text-primary">{{ $stats['note_max'] ?? '—' }}</div>
+                        <div class="text-muted font-size-sm">Meilleure note</div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="font-size-h3 font-w700 text-danger">{{ $stats['note_min'] ?? '—' }}</div>
+                        <div class="text-muted font-size-sm">Note la plus basse</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="block block-rounded p-lg-5 p-3 mt-5">
 
+            @unless ($canManage)
+                <div class="alert alert-info">
+                    Consultation uniquement : seuls le professeur du cours et le secrétaire de cycle peuvent modifier
+                    les notes.
+                </div>
+            @endunless
+
             <form
-                action="{{ route('evaluation.update', ['evaluation' => $evaluation->id, 'trimestre' => $trimestre->id]) }}"
+                action="{{ route('evaluation.update', ['evaluation' => $evaluation, 'trimestre' => $trimestre]) }}"
                 method="post">
                 @csrf
                 <div class="d-flex mx-0 mb-5 px-0 justify-content-between align-items-center">
-                    <h3>Notes de la classe de {{ substr($evaluation->cours->classe->nom, 0, 6) }}</h3>
+                    <h3>Notes de la classe de {{ $evaluation->cours->classe->nom }}</h3>
                     @if ($evaluation->type === 'devoir' || $evaluation->type === 'composition')
-                        <a href="{{ route('evaluation.index', ['promotion' => $promotion->id, 'matiere' => $evaluation->cours->matiere->id, 'trimestre' => $trimestre->id]) }}"
+                        <a href="{{ route('evaluation.index', ['promotion' => $promotion, 'matiere' => $evaluation->cours->matiere, 'trimestre' => $trimestre]) }}"
                             class="btn btn-secondary"><i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
                     @else
-                        <a href="{{ route('interrogation.index', ['classe' => $evaluation->cours->classe->id, 'cours' => $evaluation->cours->id, 'trimestre' => $trimestre->id]) }}"
+                        <a href="{{ route('interrogation.index', ['classe' => $evaluation->cours->classe, 'cours' => $evaluation->cours, 'trimestre' => $trimestre]) }}"
                             class="btn btn-secondary"><i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
                     @endif
                 </div>
@@ -72,12 +117,13 @@
                         <div class="form-group col-12 col-lg-5">
                             <label for="intitule">Intitulé de l'évaluation</label>
                             <input type="text" class="form-control form-control-alt" id="intitule" name="intitule"
-                                value="{{ $evaluation->intitule }}" />
+                                value="{{ $evaluation->intitule }}" @disabled(!$canManage) />
                         </div>
                         <div class="form-group col-12 col-lg-3">
                             <label for="intitule">Type d'évaluation</label>
                             <select class="form-control form-control-alt" id="type" name="type" style="width: 100%;"
-                                data-placeholder="Choisissez un type" value="{{ $evaluation->type }}">
+                                data-placeholder="Choisissez un type" value="{{ $evaluation->type }}"
+                                @disabled(!$canManage)>
                                 @if ($evaluation->type === 'devoir')
                                     <option value="devoir">Devoir</option>
                                     <option value="composition">Composition</option>
@@ -94,20 +140,20 @@
                         <div class="form-group col-12 col-lg-2">
                             <label for="bareme">Note maximale</label>
                             <input type="number" class="form-control form-control-alt" id="bareme" name="note_maximale"
-                                placeholder="Bareme..." value="{{ $evaluation->note_maximale }}" />
+                                placeholder="Bareme..." value="{{ $evaluation->note_maximale }}" @disabled(!$canManage) />
                         </div>
                         <div class="form-group col-12 col-lg-2">
                             <label for="example-flatpickr-default">Date évaluation</label>
                             <input type="text" class="js-flatpickr form-control form-control-alt"
                                 id="example-flatpickr-default" name="date" value="{{ $evaluation->date }}"
-                                placeholder="Y-m-d" />
+                                placeholder="Y-m-d" @disabled(!$canManage) />
                         </div>
                     </div>
                 </div>
 
 
                 <div class="block-content tab-content">
-                    @foreach ($evaluation->notes->sortBy('created_at', SORT_NATURAL) as $note)
+                    @foreach ($evaluation->notes->sortBy(fn($note) => $note->eleve->nom . ' ' . $note->eleve->prenom, SORT_NATURAL) as $note)
                         <div class="row mx-0 px-0">
 
                             <div class="d-flex col-12 my-2 align-items-center">
@@ -125,7 +171,7 @@
                                 <!-- Champ pour la note -->
                                 <input type="number" class="form-control form-control-alt col-2 col-lg-1"
                                     name="notes[{{ $note->id }}][valeur]" value="{{ $note->valeur }}"
-                                    min="0" step="0.25" max="20">
+                                    min="0" step="0.25" max="20" @disabled(!$canManage)>
                             </div>
                         </div>
 
@@ -133,9 +179,11 @@
                     @endforeach
                 </div>
 
-                <div class="d-flex mt-5">
-                    <button class="btn btn-success" type="submit">Enregistrer modifications</button>
-                </div>
+                @if ($canManage)
+                    <div class="d-flex mt-5">
+                        <button class="btn btn-success" type="submit">Enregistrer modifications</button>
+                    </div>
+                @endif
 
             </form>
         </div>

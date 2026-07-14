@@ -11,7 +11,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Assiduité</li>
-                        <li class="breadcrumb-item">{{ substr($classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{ $classe->nom }}</li>
                         <li class="breadcrumb-item">{{ $assiduite->eleve->nom }}
                             {{ $assiduite->eleve->prenom }}
                         </li>
@@ -58,13 +58,13 @@
         <!---- Copiez collez ----->
 
         <div class="block block-rounded p-5">
-            <form action="{{ route('comportement.update', $assiduite->id) }}" method="post">
+            <form action="{{ route('comportement.update', $assiduite) }}" method="post">
                 @csrf
                 <div class="d-flex mx-0 px-0 mb-5 justify-content-between align-items-center">
                     <h3 class="m-0">Remarques sur le comportement de {{ $assiduite->eleve->nom }}
                         {{ $assiduite->eleve->prenom }}</h3>
 
-                    <a href="{{ route('assiduite.index', ['eleve' => $assiduite->eleve->id, 'classe' => $classe->id]) }}"
+                    <a href="{{ route('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $classe]) }}"
                         class="btn btn-secondary mr-1">
                         <i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
                 </div>
@@ -74,10 +74,9 @@
                     <div class="row mx-0 px-0 align-items-center justify-content-around">
 
                         @php
-
                             $comportement = json_decode($assiduite->comportement);
-                            $avertissement = $comportement->avertissement;
-                            $blame = $comportement->blame;
+                            $avertissement = $comportement->avertissement ?? (object)['Travail' => false, 'Discipline' => false];
+                            $blame = $comportement->blame ?? (object)['Travail' => false, 'Discipline' => false];
                         @endphp
 
                         <div class="form-group">
@@ -88,13 +87,13 @@
                                     <label class="mr-2" for="avertissement_travail">
                                         Travail
                                         <input type="checkbox" name="avertissement[Travail]" id="avertissement_travail"
-                                            value="true" @if ($avertissement->Travail === true) checked @endif />
+                                            value="true" @if (($avertissement->Travail ?? false) === true) checked @endif />
                                     </label>
                                     <label for="avertissement_discipline">
                                         Discipline
                                         <input type="checkbox" name="avertissement[Discipline]"
                                             id="avertissement_discipline" value="true"
-                                            @if ($avertissement->Discipline === true) checked @endif />
+                                            @if (($avertissement->Discipline ?? false) === true) checked @endif />
                                     </label>
                                 </div>
                             </div>
@@ -110,12 +109,12 @@
                                     <label class="mr-2" for="blame_travail">
                                         Travail
                                         <input type="checkbox" name="blame[Travail]" value="travail" id="blame_travail"
-                                            @if ($blame->Travail === true) checked @endif />
+                                            @if (($blame->Travail ?? false) === true) checked @endif />
                                     </label>
                                     <label for="blame_discipline">
                                         Discipline
                                         <input type="checkbox" name="blame[Discipline]" value="discipline"
-                                            id="blame_discipline" @if ($blame->Discipline === true) checked @endif />
+                                            id="blame_discipline" @if (($blame->Discipline ?? false) === true) checked @endif />
                                     </label>
                                 </div>
                             </div>

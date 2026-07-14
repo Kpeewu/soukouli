@@ -18,7 +18,7 @@ class EleveSixiemeImport implements ToCollection
 
         $rows->shift();
 
-        $promotion = AnneeScolaire::getAnneeScolaire()->promotions->where('nom', '6')->first();
+        $promotion = AnneeScolaire::getAnneeScolaireActive()->promotions->where('nom', '6')->first();
         $classe = $promotion->classes[0];
 
         foreach ($rows as $row) {

@@ -5,12 +5,12 @@
         <div class="content content-full">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
-                    Liste des elèves de la classe de {{ substr($classe->nom, 0, 6) }}
+                    Liste des elèves de la classe de {{ $classe->nom }}
                 </h1>
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Classes</li>
-                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ substr($classe->nom, 0, 6) }}</a>
+                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ $classe->nom }}</a>
                         </li>
                     </ol>
                 </nav>

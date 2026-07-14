@@ -17,8 +17,13 @@
 \usepackage{eso-pic}
 \usepackage{ulem}
 \usepackage[french]{babel}
-\usepackage[left=1cm,right=1cm,top=1cm,bottom=1cm]{geometry}
+\usepackage[left=0.5cm,right=0.5cm,top=1cm,bottom=1cm]{geometry}
+\usepackage{tabularx}
+\usepackage{array}
 
+% Définir de nouvelles colonnes centrées
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
 
@@ -28,14 +33,14 @@
 \hspace{2cm}\textsc{Technique et de l'Artisanat}\\
 \vspace{0.3cm}
 \Large
-\textsf{\textbf{COMPLEXE SCOLAIRE}}\\
-\textsf{\textbf{MON AVENIR}}\\
+\textsf{\textbf{@latex($school['type'])}}\\
+\textsf{\textbf{@latex($school['name'])}}\\
 
 
 
 \normalsize
-Travail - Discipline - Succès\\
-BP: 68 \textit{\textsf{SOKODE - TOGO}}\\
+@latex($school['motto'])\\
+@latex($school['bp']) \textit{\textsf{@latex($school['city']) - @latex($school['country'])}}\\
 \vspace{0.5cm}
 \large
 
@@ -111,17 +116,14 @@ N & D \\
 
     \begin{center}
 
-
-    \vspace{0.5cm}
-    \hspace{-0.5cm}
-    \renewcommand{\arraystretch}{2.2}
-    \begin{tabular}{|l||p{1cm}|p{1cm}|p{1.5cm}|c|p{1.5cm}|p{2.5cm}|c|p{1cm}|}
+    \vspace{0.3cm}
+    \small
+    \renewcommand{\arraystretch}{1.8}
+    \begin{tabularx}{\textwidth}{|L{3.2cm}||C{1.2cm}|C{1.2cm}|C{1.3cm}|C{1cm}|C{1.4cm}|C{2.2cm}|L{2.5cm}|C{2cm}|}
     \hline
-    \Large \textbf{MATIERES} & \multicolumn{2}{c|}{Notes} & \centering Moy. des 2 notes & Coef & \centering Notes
-    définitives &
-    \centering Appréciation des professeurs & Professeur et signature \\
+    \textbf{MATIERES} & \multicolumn{2}{c|}{\textbf{Notes}} & \textbf{Moy.} & \textbf{Coef} & \textbf{N. Déf.} & \textbf{Appréc.} & \textbf{Professeur} & \textbf{Signature} \\
     \cline{2-3}
-    & Class & Compo & & & & & \ \\
+    & \footnotesize Class & \footnotesize Compo & & & & & & \\
     \hline
     @php
         $total = 0;
@@ -132,7 +134,7 @@ N & D \\
             $moyenne_2_notes = round(($ligne['notes_cours']['moyenne_classe'] + $ligne['notes_cours']['compo']) / 2, 2);
             $coefficient = $ligne['notes_cours']['cours']->coefficient;
             $note_def = round($moyenne_2_notes * $coefficient, 2);
-            $professeur = $ligne['notes_cours']['cours']->professeur->nom;
+            $professeur = $ligne['notes_cours']['cours']->professeur->nom ?? '';
             $appreciation = 'Néant';
             if ($moyenne_2_notes <= 5.0) {
                 $appreciation = 'Faible';
@@ -141,30 +143,25 @@ N & D \\
             } elseif (10.0 <= $moyenne_2_notes && $moyenne_2_notes < 12.0) {
                 $appreciation = 'Passable';
             } elseif (12.0 <= $moyenne_2_notes && $moyenne_2_notes < 14.0) {
-                $appreciation = 'Assez Bien';
+                $appreciation = 'A. Bien';
             } elseif (14.0 <= $moyenne_2_notes && $moyenne_2_notes < 16.0) {
                 $appreciation = 'Bien';
             } elseif (16.0 <= $moyenne_2_notes && $moyenne_2_notes < 18.0) {
-                $appreciation = 'Très Bien';
+                $appreciation = 'T. Bien';
             } elseif (18.0 <= $moyenne_2_notes && $moyenne_2_notes <= 20.0) {
                 $appreciation = 'Excellent';
             }
         @endphp
-        \large \textsf{@latex($ligne['notes_cours']['cours']->matiere->intitule)} & \large \centering \textsf{@latex($ligne['notes_cours']['moyenne_classe'])} & \large \centering
-        \textsf{@latex($ligne['notes_cours']['compo'])} &
-        \centering \large \textsf{@latex($moyenne_2_notes)} & \large \textsf{@latex($coefficient)}
-        & \centering \large \textsf{@latex($note_def)} & \centering \large \textsf{@latex($appreciation)} & \large
-        \textsf{@latex($professeur)} (Validée)
-        \\
+        \footnotesize @latex($ligne['notes_cours']['cours']->matiere->intitule) & @latex($ligne['notes_cours']['moyenne_classe']) & @latex($ligne['notes_cours']['compo']) & @latex($moyenne_2_notes) & @latex($coefficient) & @latex($note_def) & @latex($appreciation) & \footnotesize @latex($professeur) & Validée \\
         \hline
         @php
             $total += $note_def;
             $total_coefficient += $coefficient;
         @endphp
     @endforeach
-    \multicolumn{4}{|c|}{\textsc{\textbf{TOTAUX}}} & @latex($total_coefficient) & @latex($total) \\
+    \multicolumn{4}{|c|}{\textsc{\textbf{TOTAUX}}} & \textbf{@latex($total_coefficient)} & \textbf{@latex($total)}  \\
     \cline{1-6}
-    \end{tabular}
+    \end{tabularx}
 
     \end{center}
 
@@ -261,9 +258,9 @@ N & D \\
         @endphp
         Absences évaluées en heures: @latex($heures_absences)h & \\
         @php
-            $comportement = json_decode($assiduite->comportement);
-            $avertissement = $comportement->avertissement;
-            $blame = $comportement->blame;
+            $comportement = json_decode($assiduite->comportement ?? '{}');
+            $avertissement = $comportement->avertissement ?? (object)['Travail' => false, 'Discipline' => false];
+            $blame = $comportement->blame ?? (object)['Travail' => false, 'Discipline' => false];
         @endphp
         Avertissement: @if ($avertissement->Travail === true)
             Travail
@@ -279,9 +276,12 @@ N & D \\
                 Nom et signature du titulaire: @if ($classe->professeur)
                     @latex($classe->professeur->nom) @latex($classe->professeur->prenom)
                 @endif & Sokodé, le \large \today\\
-                & \textbf{Le Directeur} \\
-                & \\
-                & \\
+                @php
+                    $directeurTitre = $directeur ? $directeur->accordTitre('Le Directeur', 'La Directrice') : 'Le Directeur';
+                    $directeurNom = $directeur ? trim(($directeur->prenom ?? '') . ' ' . ($directeur->nom ?? '')) : '';
+                @endphp
+                & \textbf{@latex($directeurTitre)} \\
+                & @latex($directeurNom) \\
                 & \\
                 \hline
                 \end{tabular}

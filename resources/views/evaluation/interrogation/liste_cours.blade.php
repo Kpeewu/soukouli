@@ -11,7 +11,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Interrogation</li>
-                        <li class="breadcrumb-item"><a class="link-fx" href="">{{ substr($classe->nom, 0, 6) }}</a>
+                        <li class="breadcrumb-item"><a class="link-fx" href="">{{$classe->nom}}</a>
                         </li>
                     </ol>
                 </nav>
@@ -60,11 +60,11 @@
 
         <div class="block block-rounded">
             <div class="block-header">
-                <h3 class="block-title">Liste des cours de la classe de {{ substr($classe->nom, 0, 6) }}</h3>
+                <h3 class="block-title">Liste des cours de la classe de {{ $classe->nom }}</h3>
             </div>
             <div class="block-content">
                 <p class="font-size-sm text-muted">
-                    Voici la liste des cours de la classe de {{ substr($classe->nom, 0, 6) }}, choisissez le cours
+                    Voici la liste des cours de la classe de {{ $classe->nom }}, choisissez le cours
                     et le trimestre
                     dans lequel créer l'interrogation.
                 </p>
@@ -94,7 +94,7 @@
                                                     aria-labelledby="dropdown-default-primary">
                                                     @foreach ($trimestres as $trimestre)
                                                         <a class="dropdown-item"
-                                                            href="{{ route('evaluation.create.interrogation', ['classe' => $classe, 'cours' => $cour->id, 'trimestre' => $trimestre->id]) }}">{{ substr($trimestre->intitule, 0, 11) }}</a>
+                                                            href="{{ route('evaluation.create.interrogation', ['classe' => $classe, 'cours' => $cour, 'trimestre' => $trimestre]) }}">{{ substr($trimestre->intitule, 0, 11) }}</a>
                                                     @endforeach
                                                 </div>
                                             </div>

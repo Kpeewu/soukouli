@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\NouvelleAnneeScolaire;
 use App\Console\Commands\PassageEleves;
+use App\Services\CronScheduleService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,12 +16,21 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(NouvelleAnneeScolaire::class)->everyFiveMinutes()->when(function () {
-                 return now()->month == 8;
-             })->sendOutputTo(__DIR__ . '/nouvelleAnneeSchedul.log')->withoutOverlapping();
-             
+                 return CronScheduleService::isEnabledThisMonth(
+                     CronScheduleService::KEY_ANNEE_ENABLED,
+                     CronScheduleService::KEY_ANNEE_MONTH,
+                     8
+                 );
+             })->sendOutputTo(storage_path('logs/nouvelleAnneeSchedule.log'))->withoutOverlapping();
+
         $schedule->command(PassageEleves::class)->everyTenMinutes()->when(function () {
-                 return now()->month == 8;
-             })->sendOutputTo(__DIR__ . '/passageElevesSchedule.log')->withoutOverlapping();
+                 return CronScheduleService::isEnabledThisMonth(
+                     CronScheduleService::KEY_PASSAGE_ENABLED,
+                     CronScheduleService::KEY_PASSAGE_MONTH,
+                     8,
+                     false
+                 );
+             })->sendOutputTo(storage_path('logs/passageElevesSchedule.log'))->withoutOverlapping();
     }
 
     /**

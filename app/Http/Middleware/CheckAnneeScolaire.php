@@ -57,14 +57,14 @@ class CheckAnneeScolaire
                         for ($j = 1; $j < 4; $j++) {
 
                             Trimestre::create([
-                                'intitule' => 'Trimestre ' . $j . ' ' . $promotion->nom . 'eme ' . $promotion->anneeScolaire->annee,
+                                'intitule' => 'Trimestre ' . $j . ' ' . $promotion->nom . ' ' . $promotion->anneeScolaire->annee,
                                 'promotion_id' => $promotion->id
                             ]);
                         }
 
                         // création des classes
                         Classe::create([
-                            'nom' => $promotion->nom . 'eme A' . ' ' . $promotion->anneeScolaire->annee,
+                            'nom' => $promotion->nom . ' A',
                             'promotion_id' => $promotion->id
                         ]);
                     }

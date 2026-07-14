@@ -12,7 +12,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Assiduité</li>
-                        <li class="breadcrumb-item">{{ substr($classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{ $classe->nom }}</li>
                         <li class="breadcrumb-item">{{ $assiduite->eleve->nom }}
                             {{ $assiduite->eleve->prenom }}
                         </li>
@@ -65,12 +65,14 @@
             <div class="block-header">
                 <h3 class="block-title">Liste des absences de {{ $assiduite->eleve->nom }}
                     {{ $assiduite->eleve->prenom }}</h3>
-                <a href="{{ route('assiduite.index', ['eleve' => $assiduite->eleve->id, 'classe' => $classe->id]) }}"
+                <a href="{{ route('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $classe]) }}"
                     class="btn btn-secondary mr-1">
                     <i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
-                <a class="btn btn-success"
-                    href="{{ route('absence.create', ['assiduite' => $assiduite->id, 'classe' => $classe->id]) }}">Ajouter
-                    une absence</a>
+                @if($canManage)
+                    <a class="btn btn-success"
+                        href="{{ route('absence.create', ['assiduite' => $assiduite, 'classe' => $classe]) }}">Ajouter
+                        une absence</a>
+                @endif
             </div>
 
             <div class="block-content">
@@ -81,7 +83,9 @@
                                 <th class="text-center">Date</th>
                                 <th class="text-center">Heures d'absences</th>
                                 <th class="text-center">Justification</th>
-                                <th class="text-center">Supprimer</th>
+                                @if($canManage)
+                                    <th class="text-center">Supprimer</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -91,15 +95,17 @@
                                         <td class="text-center">{{ $absence->date }}</td>
                                         <td class="text-center">{{ $absence->nombre_heure }}</td>
                                         <td class="text-center">{{ $absence->justification }}</td>
-                                        <td class="text-center">
-                                            <form action="{{ route('absence.destroy', $absence->id) }}" method="post"
-                                                onsubmit="return Confirm()">
-                                                @csrf
-                                                @method('delete')
-                                                <button class="btn btn-danger" type="submit"><i class="fa fa-trash"
-                                                        aria-hidden="true"></i></button>
-                                            </form>
-                                        </td>
+                                        @if($canManage)
+                                            <td class="text-center">
+                                                <form action="{{ route('absence.destroy', $absence) }}" method="post"
+                                                    onsubmit="return Confirm()">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button class="btn btn-danger" type="submit"><i class="fa fa-trash"
+                                                            aria-hidden="true"></i></button>
+                                                </form>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             @else

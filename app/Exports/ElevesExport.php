@@ -2,14 +2,16 @@
 
 namespace App\Exports;
 
-use App\Models\Eleve;
+use App\Models\Classe;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
 class ElevesExport implements WithHeadings, WithMapping, FromQuery
 {
-
+    public function __construct(protected Classe $classe)
+    {
+    }
 
     public function headings(): array
     {
@@ -20,7 +22,7 @@ class ElevesExport implements WithHeadings, WithMapping, FromQuery
 
     public function query()
     {
-        return Eleve::query();
+        return $this->classe->eleves();
     }
 
     public function map($eleve): array

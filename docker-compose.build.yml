@@ -1,0 +1,19 @@
+# Override reserve au mainteneur/CI pour construire l'image localement.
+# Les clients n'utilisent jamais ce fichier (ils recuperent l'image depuis
+# le registre public via `docker compose pull`).
+#
+# Usage : docker compose -f docker-compose.yml -f docker-compose.build.yml build
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}

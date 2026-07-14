@@ -11,8 +11,8 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Evaluation</li>
-                        <li class="breadcrumb-item">{{ substr($classe->nom, 0, 6) }}</li>
-                        <li class="breadcrumb-item">{{ substr($cours->nom, 0) }}</li>
+                        <li class="breadcrumb-item">{{ $classe->nom }}</li>
+                        <li class="breadcrumb-item">{{ $cours->nom }}</li>
                         <li class="breadcrumb-item"><a class="link-fx"
                                 href="">{{ substr($trimestre->intitule, 0, 11) }}</a></li>
                     </ol>
@@ -61,7 +61,7 @@
                 @csrf
                 <div class="d-flex mx-0 mb-5 px-0 justify-content-between align-items-center">
                     <h3>Nouvelle interrogation de {{ $cours->nom }}</h3>
-                    <a href="{{ route('interrogation.cours', $classe->id) }}" class="btn btn-secondary"><i
+                    <a href="{{ route('interrogation.cours', $classe) }}" class="btn btn-secondary"><i
                             class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
                 </div>
 

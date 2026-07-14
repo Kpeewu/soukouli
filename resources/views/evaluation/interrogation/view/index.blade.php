@@ -6,14 +6,14 @@
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
                     Liste des interrogations en {{ $cours->matiere->intitule }} de la classe
-                    {{ substr($classe->nom, 0, 6) }}
+                    {{ $classe->nom }}
                     du
                     {{ substr($trimestre->intitule, 0, 11) }}.
                 </h1>
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Interrogation</li>
-                        <li class="breadcrumb-item">{{ substr($classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{ $classe->nom}}</li>
                         <li class="breadcrumb-item">{{ $cours->matiere->intitule }}</li>
                         <li class="breadcrumb-item"><a class="link-fx"
                                 href="">{{ substr($trimestre->intitule, 0, 11) }}</a></li>
@@ -62,9 +62,9 @@
 
         <div class="block block-rounded">
             <div class="block-header">
-                <h3 class="block-title">Liste des evaluations de la classe de {{ substr($classe->nom, 0, 6) }} en
+                <h3 class="block-title">Liste des evaluations de la classe de {{ $classe->nom }} en
                     {{ $cours->matiere->intitule }}</h3>
-                <a href="{{ route('view_interrogation_cours', $classe->id) }}" class="btn btn-secondary"><i
+                <a href="{{ route('view_interrogation_cours', $classe) }}" class="btn btn-secondary"><i
                         class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
             </div>
             <div class="block-content">
@@ -81,7 +81,9 @@
                                 <th class="text-center">Date de l'interrogation</th>
                                 <th class="text-center" style="width: 150px;">Classe</th>
                                 <th class="text-center" class="text-center">Voir détails</th>
-                                <th class="text-center" style="width: 50px;">Suppression</th>
+                                @if($canManage)
+                                    <th class="text-center" style="width: 50px;">Suppression</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -91,22 +93,24 @@
                                         <td>{{ $evaluation->intitule }}</td>
                                         <td class="text-center text-primary fw-bolder">{{ $evaluation->type }}</td>
                                         <td class="text-center">{{ $evaluation->date }}</td>
-                                        <td class="text-center">{{ substr($evaluation->cours->classe->nom, 0, 6) }}</td>
+                                        <td class="text-center">{{ $evaluation->cours->classe->nom }}</td>
                                         <td class="text-center">
                                             <a class="btn btn-success"
-                                                href="{{ route('evaluation.show', ['evaluation' => $evaluation->id, 'trimestre' => $trimestre->id, 'promotion' => $classe->promotion->id]) }}"><i
+                                                href="{{ route('evaluation.show', ['evaluation' => $evaluation, 'trimestre' => $trimestre, 'promotion' => $classe->promotion]) }}"><i
                                                     class="si si-eye"></i> Détails</a>
                                         </td>
-                                        <td class="text-center">
-                                            <form action="{{ route('evaluation.destroy', $evaluation->id) }}"
-                                                method="post" onsubmit="return Confirm()">
-                                                @csrf
-                                                @method('delete')
+                                        @if($canManage)
+                                            <td class="text-center">
+                                                <form action="{{ route('evaluation.destroy', $evaluation) }}"
+                                                    method="post" onsubmit="return Confirm()">
+                                                    @csrf
+                                                    @method('delete')
 
-                                                <button type="submit" class="btn btn-danger"><i
-                                                        class="fa fa-trash"></i></button>
-                                            </form>
-                                        </td>
+                                                    <button type="submit" class="btn btn-danger"><i
+                                                            class="fa fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             @else

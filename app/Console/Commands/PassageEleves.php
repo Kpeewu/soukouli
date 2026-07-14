@@ -2,11 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AnneeScolaire;
-use App\Models\Assiduite;
-use App\Models\Promotion;
-use Carbon\Carbon;
+use App\Services\PassageElevesService;
 use Illuminate\Console\Command;
+use RuntimeException;
 
 class PassageEleves extends Command
 {
@@ -22,76 +20,38 @@ class PassageEleves extends Command
      *
      * @var string
      */
-    protected $description = 'Déclenche le passage des élèves en année supérieure';
+    protected $description = 'Declenche le passage des eleves en annee superieure';
+
+    public function __construct(private PassageElevesService $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        //
-        $aujourdHui = Carbon::now();
-        $anneeScolaire = AnneeScolaire::getAnneeScolaire();
-        $promotions = $anneeScolaire->promotions;
+        try {
+            $stats = $this->service->executerPassageComplet();
+        } catch (RuntimeException $e) {
+            $this->error($e->getMessage());
+            return;
+        }
 
-        $nextYear = AnneeScolaire::where('annee', '=', $aujourdHui->year . '-' . $aujourdHui->year + 1)->first();
+        $this->info('Passage des eleves pour l\'annee ' . $stats['nouvelle_annee']->annee);
 
+        foreach ($stats['erreurs'] as $erreur) {
+            $this->error("Erreur pour l'eleve {$erreur}");
+        }
 
-        foreach ($promotions as $promotion) {
-            foreach ($promotion->classes as $classe) {
-                foreach ($classe->eleves as $eleve) {
-                    if ($nextYear) {
-                        $nom_promotion_actuelle = intval($promotion->nom);
-                        if ($eleve->passeEnClasseSup($classe->id)) {
-                            if ($nom_promotion_actuelle > 3) {
-                                $nom_promotion_suiv = $nom_promotion_actuelle - 1;
-                                $promotion_suiv = Promotion::where('annee_scolaire_id', $nextYear->id)->where('nom', strval($nom_promotion_suiv))->first();
-                                $classe_suiv_pass = $promotion_suiv->classes[0];
-                                if (!in_array($eleve->id, $classe_suiv_pass->eleves->pluck('id')->toArray())) {
-                                    $eleve->classes()->attach($classe_suiv_pass);
-                                    $eleve->update([
-                                        'redoublant' => false
-                                    ]);
-
-                                    $trimestres = $classe_suiv_pass->promotion->trimestres;
-
-                                    foreach ($trimestres as $trimestre) {
-                                        Assiduite::create([
-                                            'trimestre_id' => $trimestre->id,
-                                            'eleve_id' => $eleve->id
-                                        ]);
-                                    }
-                                }
-                                $temp_promotion_suiv = Promotion::where('annee_scolaire_id', $nextYear->id)->where('nom', strval($nom_promotion_actuelle))->first();
-                                $temp_classe_suiv_pass = $temp_promotion_suiv->classes[0];
-
-                                if (in_array($eleve->id, $temp_classe_suiv_pass->eleves->pluck('id')->toArray())) {
-                                    $eleve->classes()->detach($temp_classe_suiv_pass);
-                                }
-                            }
-                        } else {
-                            $promotion_suiv = Promotion::where('annee_scolaire_id', $nextYear->id)->where('nom', strval($nom_promotion_actuelle))->first();
-                            $classe_suiv = $promotion_suiv->classes[0];
-                            if (!in_array($eleve->id, $classe_suiv->eleves->pluck('id')->toArray())) {
-                                $eleve->classes()->attach($classe_suiv);
-                                $eleve->update([
-                                    'redoublant' => true
-                                ]);
-
-
-                                $trimestres = $classe_suiv->promotion->trimestres;
-
-                                foreach ($trimestres as $trimestre) {
-                                    Assiduite::create([
-                                        'trimestre_id' => $trimestre->id,
-                                        'eleve_id' => $eleve->id
-                                    ]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        $this->newLine();
+        $this->info('=== Statistiques du passage ===');
+        $this->line("Eleves passes en classe superieure: {$stats['nb_passes']}");
+        $this->line("Eleves redoublants: {$stats['nb_redoublants']}");
+        $this->line("Eleves diplomes (fin de scolarite): {$stats['nb_diplomes']}");
+        if ($stats['nb_erreurs'] > 0) {
+            $this->error("Erreurs rencontrees: {$stats['nb_erreurs']}");
         }
     }
 }

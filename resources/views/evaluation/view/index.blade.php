@@ -5,13 +5,13 @@
         <div class="content content-full">
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-sm-fill h3 my-2">
-                    Liste des évaluations en {{ $matiere->intitule }} de {{ $promotion->nom }}eme du
+                    Liste des évaluations en {{ $matiere->intitule }} de {{ $promotion->nom }} du
                     {{ substr($trimestre->intitule, 0, 11) }}.
                 </h1>
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Evaluation</li>
-                        <li class="breadcrumb-item">{{ $promotion->nom }}eme</li>
+                        <li class="breadcrumb-item">{{ $promotion->nom }}</li>
                         <li class="breadcrumb-item">{{ $matiere->intitule }}</li>
                         <li class="breadcrumb-item"><a class="link-fx"
                                 href="">{{ substr($trimestre->intitule, 0, 11) }}</a></li>
@@ -60,13 +60,13 @@
 
         <div class="block block-rounded">
             <div class="block-header">
-                <h3 class="block-title">Liste des evaluations de {{ $promotion->nom }}eme en {{ $matiere->intitule }}</h3>
-                <a href="{{ route('view_evaluation_matieres', $promotion->id) }}" class="btn btn-secondary"><i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                <h3 class="block-title">Liste des evaluations de {{ $promotion->nom }} en {{ $matiere->intitule }}</h3>
+                <a href="{{ route('view_evaluation_matieres', $promotion) }}" class="btn btn-secondary"><i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
             </div>
             <div class="block-content">
                 <p class="font-size-sm text-muted">
                     Voici la liste des devoirs et compositions en {{ $matiere->intitule }} au niveau de la
-                    {{ $promotion->nom }}eme.
+                    {{ $promotion->nom }}.
                 </p>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-vcenter js-dataTable-full-pagination">
@@ -77,7 +77,9 @@
                                 <th class="text-center" style="width: 200px;">Date de l'examen</th>
                                 <th class="text-center" style="width: 175px;">Classe</th>
                                 <th class="text-center">Voir détails</th>
-                                <th class="text-center" style="width: 50px;">Suppression</th>
+                                @if(auth()->user()->getSecretaireCycle())
+                                    <th class="text-center" style="width: 50px;">Suppression</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -87,22 +89,26 @@
                                         <td>{{ $evaluation->intitule }}</td>
                                         <td class="text-center text-primary fw-bolder">{{ $evaluation->type }}</td>
                                         <td class="text-center">{{ $evaluation->date }}</td>
-                                        <td class="text-center">{{ substr($evaluation->cours->classe->nom, 0, 6) }}</td>
+                                        <td class="text-center">{{ $evaluation->cours->classe->nom }}</td>
                                         <td class="text-center">
                                             <a class="btn btn-success"
-                                                href="{{ route('evaluation.show', ['evaluation' => $evaluation->id, 'trimestre' => $trimestre->id, 'promotion' => $promotion->id]) }}"><i
+                                                href="{{ route('evaluation.show', ['evaluation' => $evaluation, 'trimestre' => $trimestre, 'promotion' => $promotion]) }}"><i
                                                     class="si si-eye"></i> Détails</a>
                                         </td>
-                                        <td class="text-center">
-                                            <form action="{{ route('evaluation.destroy', $evaluation->id) }}"
-                                                method="post" onsubmit="return Confirm()">
-                                                @csrf
-                                                @method('delete')
+                                        @if(auth()->user()->canDeleteEvaluation($evaluation))
+                                            <td class="text-center">
+                                                <form action="{{ route('evaluation.destroy', $evaluation) }}"
+                                                    method="post" onsubmit="return Confirm()">
+                                                    @csrf
+                                                    @method('delete')
 
-                                                <button type="submit" class="btn btn-danger"><i
-                                                        class="fa fa-trash"></i></button>
-                                            </form>
-                                        </td>
+                                                    <button type="submit" class="btn btn-danger"><i
+                                                            class="fa fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        @elseif(auth()->user()->getSecretaireCycle())
+                                            <td></td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             @else

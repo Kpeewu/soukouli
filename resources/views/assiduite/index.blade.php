@@ -11,7 +11,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Assiduité</li>
-                        <li class="breadcrumb-item">{{ substr($classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{ $classe->nom }}</li>
                         <li class="breadcrumb-item"><a class="link-fx" href="">{{ $eleve->nom }}
                                 {{ $eleve->prenom }}</a>
                         </li>
@@ -60,7 +60,7 @@
             <div class="block-header">
                 <h3 class="block-title">Retards et absences de {{ $eleve->nom }} {{ $eleve->prenom }}</h3>
 
-                <a href="{{ route('classe.index', $classe->id) }}" class="btn btn-secondary"><i
+                <a href="{{ route('classe.index', $classe) }}" class="btn btn-secondary"><i
                         class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
             </div>
 
@@ -99,7 +99,7 @@
 
                                                 <li class="nav-main-item">
                                                     <a class="nav-main-link"
-                                                        href="{{ route('retard.index', ['assiduite' => $assiduite->id, 'classe' => $classe->id]) }}">
+                                                        href="{{ route('retard.index', ['assiduite' => $assiduite, 'classe' => $classe]) }}">
                                                         <span class="nav-main-link-name"><i
                                                                 class="fa fa-clock mr-2"></i>Retards</span>
                                                     </a>
@@ -107,18 +107,20 @@
 
                                                 <li class="nav-main-item">
                                                     <a class="nav-main-link"
-                                                        href="{{ route('absence.index', ['assiduite' => $assiduite->id, 'classe' => $classe->id]) }}">
+                                                        href="{{ route('absence.index', ['assiduite' => $assiduite, 'classe' => $classe]) }}">
                                                         <span class="nav-main-link-name"><i
                                                                 class="fa fa-clipboard-list mr-2"></i>Absences</span>
                                                     </a>
                                                 </li>
 
-                                                <li class="nav-main-item">
-                                                    <a class="nav-main-link" href="{{ route('comportement.edit', ['assiduite' => $assiduite->id, 'classe' => $classe->id]) }}">
-                                                        <span class="nav-main-link-name"><i
-                                                                class="fa fa-exclamation-triangle mr-2"></i>Comportement</span>
-                                                    </a>
-                                                </li>
+                                                @if($canManage)
+                                                    <li class="nav-main-item">
+                                                        <a class="nav-main-link" href="{{ route('comportement.edit', ['assiduite' => $assiduite, 'classe' => $classe]) }}">
+                                                            <span class="nav-main-link-name"><i
+                                                                    class="fa fa-exclamation-triangle mr-2"></i>Comportement</span>
+                                                        </a>
+                                                    </li>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>

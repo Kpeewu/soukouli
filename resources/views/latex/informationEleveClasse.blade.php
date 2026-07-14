@@ -29,13 +29,13 @@
     \textbf{Fiche d'information}\\
     \small
     \vspace{0cm}
-    COMPLEXE PRIVÉ LAÏQUE MON AVENIR\\
+    @latex($school['full_name'])\\
     \end{flushright}
 
     \vspace{0cm}
 
     \begin{figure}[!h]
-    @if (file_exists(public_path('/storage/' . $eleve->profil)))
+    @if (!empty($eleve->profil) && is_file(public_path('/storage/' . $eleve->profil)))
         \includegraphics[height=5.4cm]{@latex(public_path('/storage/' . $eleve->profil))}
     @else
         \includegraphics[height=5.4cm]{@latex(public_path('/assets/media/avatars/avatar1.jpg'))}
@@ -74,6 +74,12 @@
     \end{tabular}
 
 
+    @php
+        $pere = $eleve->pere ?? [];
+        $mere = $eleve->mere ?? [];
+        $tuteur = $eleve->contact_tuteur ?? [];
+    @endphp
+
     \vspace{0.5cm}
     \renewcommand{\arraystretch}{1.5}
     \hspace{-0.8cm}
@@ -84,23 +90,23 @@
     & \\
 
     \textbf{\large Père} & \\
-    \textbf{Nom:} @latex(json_decode($eleve->pere)->nom) & \textbf{Prénom:} @latex(json_decode($eleve->pere)->prenom) \\
-    \textbf{Contact:} @latex(json_decode($eleve->pere)->telephone) & \textbf{Adresse:} @latex(json_decode($eleve->pere)->adresse)\\
-    \textbf{Profession:} @latex(json_decode($eleve->pere)->profession) & \textbf{Situation Matrimoniale:} @latex(json_decode($eleve->pere)->situation_matrimoniale)\\
+    \textbf{Nom:} @latex($pere['nom'] ?? '-') & \textbf{Prénom:} @latex($pere['prenom'] ?? '-') \\
+    \textbf{Contact:} @latex($pere['telephone'] ?? '-') & \textbf{Adresse:} @latex($pere['adresse'] ?? '-')\\
+    \textbf{Profession:} @latex($pere['profession'] ?? '-') & \textbf{Situation Matrimoniale:} @latex($pere['situation_matrimoniale'] ?? '-')\\
 
     & \\
 
     \textbf{\large Mère} & \\
-    \textbf{Nom:} @latex(json_decode($eleve->mere)->nom) & \textbf{Prénom:} @latex(json_decode($eleve->mere)->prenom) \\
-    \textbf{Contact:} @latex(json_decode($eleve->mere)->telephone) & \textbf{Adresse:} @latex(json_decode($eleve->mere)->adresse)\\
-    \textbf{Profession:} @latex(json_decode($eleve->mere)->profession) & \textbf{Situation Matrimoniale:} @latex(json_decode($eleve->mere)->situation_matrimoniale)\\
+    \textbf{Nom:} @latex($mere['nom'] ?? '-') & \textbf{Prénom:} @latex($mere['prenom'] ?? '-') \\
+    \textbf{Contact:} @latex($mere['telephone'] ?? '-') & \textbf{Adresse:} @latex($mere['adresse'] ?? '-')\\
+    \textbf{Profession:} @latex($mere['profession'] ?? '-') & \textbf{Situation Matrimoniale:} @latex($mere['situation_matrimoniale'] ?? '-')\\
 
     & \\
 
     \textbf{\large Tuteur/Tutrice} & \\
-    \textbf{Nom:} @latex(json_decode($eleve->contact_tuteur)->nom) & \textbf{Prénom:} @latex(json_decode($eleve->contact_tuteur)->prenom) \\
-    \textbf{Contact:} @latex(json_decode($eleve->contact_tuteur)->telephone) & \textbf{Adresse:} @latex(json_decode($eleve->contact_tuteur)->adresse)\\
-    \textbf{Profession:} @latex(json_decode($eleve->contact_tuteur)->profession) & \textbf{Situation Matrimoniale:} @latex(json_decode($eleve->contact_tuteur)->situation_matrimoniale)\\
+    \textbf{Nom:} @latex($tuteur['nom'] ?? '-') & \textbf{Prénom:} @latex($tuteur['prenom'] ?? '-') \\
+    \textbf{Contact:} @latex($tuteur['telephone'] ?? '-') & \textbf{Adresse:} @latex($tuteur['adresse'] ?? '-')\\
+    \textbf{Profession:} @latex($tuteur['profession'] ?? '-') & \textbf{Situation Matrimoniale:} @latex($tuteur['situation_matrimoniale'] ?? '-')\\
 
 
     \hline
@@ -108,14 +114,18 @@
 
 
 
+    @php
+        $sante = $eleve->sante ?? [];
+    @endphp
+
     \vspace{0.5cm}
     \renewcommand{\arraystretch}{1.5}
     \hspace{-0.8cm}
     \begin{tabular}{|p{7cm} p{11.2cm}|}
     \hline
     \textbf{\large \underline{Informations sur la santé de l'élève}} & \\
-    \textbf{Groupe Sanguin:} @latex(json_decode($eleve->sante)->groupe) & \textbf{Problème de santé importants:} @latex(json_decode($eleve->sante)->problemes) \\
-    \textbf{Restrictions d'activités:} @latex(json_decode($eleve->sante)->restrictions) & \textbf{Médicaments pris régulièrement:} @latex(json_decode($eleve->sante)->medicaments)
+    \textbf{Groupe Sanguin:} @latex($sante['groupe'] ?? $sante['groupe_sanguin'] ?? '-') & \textbf{Problème de santé importants:} @latex($sante['problemes'] ?? $sante['maladies_chroniques'] ?? '-') \\
+    \textbf{Restrictions d'activités:} @latex($sante['restrictions'] ?? $sante['allergies'] ?? '-') & \textbf{Médicaments pris régulièrement:} @latex($sante['medicaments'] ?? '-')
     \\
     \hline
     \end{tabular}

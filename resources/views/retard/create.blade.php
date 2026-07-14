@@ -10,7 +10,7 @@
                 <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb breadcrumb-alt">
                         <li class="breadcrumb-item">Assiduité</li>
-                        <li class="breadcrumb-item">{{ substr($classe->nom, 0, 6) }}</li>
+                        <li class="breadcrumb-item">{{ $classe->nom }}</li>
                         <li class="breadcrumb-item">{{ $assiduite->eleve->nom }}
                             {{ $assiduite->eleve->prenom }}
                         </li>
@@ -58,12 +58,12 @@
         <!---- Copiez collez ----->
 
         <div class="block block-rounded p-5">
-            <form action="{{ route('retard.store', $classe->id) }}" method="post">
+            <form action="{{ route('retard.store', $classe) }}" method="post">
                 @csrf
                 <div class="d-flex mx-0 px-0 mb-5 justify-content-between align-items-center">
                     <h3 class="m-0">Ajouter un retard</h3>
 
-                    <a href="{{ route('retard.index', ['assiduite' => $assiduite->id, 'classe' => $classe->id]) }}"
+                    <a href="{{ route('retard.index', ['assiduite' => $assiduite, 'classe' => $classe]) }}"
                         class="btn btn-secondary mr-1">
                         <i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
                 </div>

@@ -58,8 +58,10 @@
 
         <div class="block block-rounded">
             <div class="block-header">
-                <h3 class="block-title">Liste des matières</h3> <a class="btn btn-success"
-                    href="{{ route('matiere.create') }}">Nouvelle matière</a>
+                <h3 class="block-title">Liste des matières</h3>
+                @if($canManage)
+                    <a class="btn btn-success" href="{{ route('matiere.create') }}">Nouvelle matière</a>
+                @endif
             </div>
             <div class="block-content">
                 <p class="font-size-sm text-muted">
@@ -71,7 +73,9 @@
                             <tr>
                                 <th>Nom de la matière</th>
                                 <th class="text-center">Niveaux d'enseignement</th>
-                                <th class="text-center" style="width: 100px;">Actions</th>
+                                @if($canManage)
+                                    <th class="text-center" style="width: 100px;">Actions</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -83,17 +87,19 @@
                                         </td>
                                         <td class="text-center">
                                             @foreach ($matiere['promotions'] as $promotion)
-                                                <span class="badge badge-primary">{{ $promotion->nom }}eme</span>
+                                                <span class="badge badge-primary">{{ $promotion->nom }}</span>
                                             @endforeach
                                         </td>
-                                        <td class="text-center">
-                                            <form action="{{ route('matiere.delete', $matiere['matiere']->id) }}"
-                                                method="post" onsubmit="return Confirm()">
-                                                @method('delete')
-                                                @csrf
-                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                            </form>
-                                        </td>
+                                        @if($canManage)
+                                            <td class="text-center">
+                                                <form action="{{ route('matiere.delete', $matiere['matiere']) }}"
+                                                    method="post" onsubmit="return Confirm()">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             @else

@@ -56,8 +56,26 @@
 
             <div class="block-header">
                 <h3 class="block-title">Équipe enseignante du CPL Mon Avenir</h3>
-                <a href="{{ route('professeur.create') }}" class="btn btn-success">Recruter</a>
+                @if($canRecruit)
+                    <a href="{{ route('professeur.create') }}" class="btn btn-success">Recruter</a>
+                @endif
             </div>
+
+            @if($showCycleFilter)
+                <div class="block-content pb-0">
+                    <form method="GET" action="{{ route('professeur.index') }}" class="form-inline mb-3">
+                        <label for="cycle_id" class="mr-2">Filtrer par cycle :</label>
+                        <select name="cycle_id" id="cycle_id" class="form-control" style="width: 250px;"
+                            onchange="this.form.submit()">
+                            <option value="">Tous les cycles</option>
+                            @foreach($cycles as $cycle)
+                                <option value="{{ $cycle->id }}" @selected($selectedCycleId == $cycle->id)>
+                                    {{ $cycle->nom }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            @endif
 
             <div class="block-content">
                 <div class="table-responsive">
@@ -69,7 +87,9 @@
                                 <th class="text-center">Sexe</th>
                                 <th class="text-center" style="width: 200px;">Contact</th>
                                 <th class="text-center">Classe tutorée</th>
-                                <th class="text-center" style="width: 200px;" class="text-center">Actions</th>
+                                @if($canManageProfesseur)
+                                    <th class="text-center" style="width: 200px;" class="text-center">Actions</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -84,9 +104,9 @@
                                         <td class="text-center">
                                             {{ $professeur->nom }} {{ $professeur->prenom }}
                                         </td>
-                                        <td class="text-center text-primary fw-bolder" style="font-weight: 700">
-                                            {{ $professeur->contact }}</td>
-                                        <td class="text-center">{{ $professeur->sexe }}</td>
+                                        <td class="text-center text-primary fw-bolder" style="font-weight: 700">{{ $professeur->sexe }}
+                                            </td>
+                                        <td class="text-center">9000000</td>
                                         <td class="text-center">
                                             @if ($professeur->classes)
                                                 @foreach ($promotions as $promotion)
@@ -95,9 +115,8 @@
                                                             @if ($prof_classe->id === $classe->id)
                                                                 <span
                                                                     class="badge badge-primary"
-                                                                    >{{ substr($prof_classe->nom, 0, 6) }}</span
+                                                                    >{{ $prof_classe->nom }}</span
                                                                 >
-                                                                 
                                                             @endif
                                                         @endforeach
                                                     @endforeach
@@ -106,23 +125,25 @@
                                                 Pas de classe
                                             @endif
                                         </td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-around">
-                                                <a href="{{ route('professeur.edit', $professeur->id) }}"
-                                                    class="btn btn-success">
-                                                    <i class="fa fa-edit" aria-hidden="true"></i>
-                                                </a>
+                                        @if($canManageProfesseur)
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-around">
+                                                    <a href="{{ route('professeur.edit', $professeur) }}"
+                                                        class="btn btn-success">
+                                                        <i class="fa fa-edit" aria-hidden="true"></i>
+                                                    </a>
 
-                                                <form id="delete-form"
-                                                    action="{{ route('professeur.destroy', $professeur->id) }}"
-                                                    method="post" onsubmit="return Confirm()">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <button class="btn btn-danger"><i class="fa fa-trash"
-                                                            aria-hidden="true"></i></button>
-                                                </form>
-                                            </div>
-                                        </td>
+                                                    <form id="delete-form"
+                                                        action="{{ route('professeur.destroy', $professeur) }}"
+                                                        method="post" onsubmit="return Confirm()">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button class="btn btn-danger"><i class="fa fa-trash"
+                                                                aria-hidden="true"></i></button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             @else

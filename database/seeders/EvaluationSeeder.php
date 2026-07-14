@@ -4,70 +4,136 @@ namespace Database\Seeders;
 
 use App\Models\Cours;
 use App\Models\Evaluation;
-use App\Models\Matiere;
-use App\Models\Promotion;
+use App\Models\Trimestre;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class EvaluationSeeder extends Seeder
 {
     /**
+     * Types d'évaluations avec leurs caractéristiques
+     */
+    private array $typesEvaluation = [
+        'interrogation' => [
+            'note_maximale' => 10,
+            'nombre_par_trimestre' => 2,
+            'intitule_pattern' => 'Interrogation %d'
+        ],
+        'devoir' => [
+            'note_maximale' => 20,
+            'nombre_par_trimestre' => 1,
+            'intitule_pattern' => 'Devoir surveillé'
+        ],
+        'composition' => [
+            'note_maximale' => 20,
+            'nombre_par_trimestre' => 1,
+            'intitule_pattern' => 'Composition'
+        ]
+    ];
+
+    /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        //
+        // Récupérer tous les cours avec leurs classes et promotions
+        $cours = Cours::with('classe.promotion.trimestres', 'matiere')->get();
 
-        /* Pour créer une évaluation il faut tout d'abord récuperer la promotion (niveau),
-        concerné puis toutes les classes de ce niveau. 
-        Ensuite recuperer toutes les matières du niveau et trier pour prendre la matières évaluée.
-        Puis dans toutes les classes du niveau récupérer les cours dans chaque matière, et enfin trier chaque cours afin de voir celui fait dans la matière donnée en comparant les identifiants des matières.
+        if ($cours->isEmpty()) {
+            $this->command->warn('Aucun cours trouvé. Exécutez d\'abord CoursSeeder.');
+            return;
+        }
 
+        $evaluationsCreees = 0;
 
-        */
+        foreach ($cours as $cour) {
+            // Vérifier que la promotion a des trimestres
+            if (!$cour->classe || !$cour->classe->promotion || !$cour->classe->promotion->trimestres) {
+                continue;
+            }
 
-        // Récupération d'une promotion d'une année scolaire donnée
-        // $promotion = Promotion::where('nom', '6')->whereHas('anneeScolaire', function ($query) {
-        //     $query->where('annee', '2022-2023');
-        // })->first();
+            $trimestres = $cour->classe->promotion->trimestres;
+            $matiereNom = $cour->matiere ? $cour->matiere->intitule : 'Matière';
 
-        // // Récupération de toutes les classes de niveau
-        // $classes = $promotion->classes;
+            foreach ($trimestres as $trimestre) {
+                // Créer les évaluations pour chaque type
+                foreach ($this->typesEvaluation as $type => $config) {
+                    $nombre = $config['nombre_par_trimestre'];
 
-        // // Récupération de toutes les matières enseignées dans ce niveau
-        // $matieres = $promotion->matieres;
+                    for ($i = 1; $i <= $nombre; $i++) {
+                        // Générer l'intitulé
+                        $intitule = $nombre > 1
+                            ? sprintf($config['intitule_pattern'], $i) . " de {$matiereNom}"
+                            : $config['intitule_pattern'] . " de {$matiereNom}";
 
-        // // Tri afin de récupérer la matière à évaluer
-        // foreach ($matieres as $matiere) {
-        //     if ($matiere->intitule === 'Mathématiques') {
-        //         $mathematiques = $matiere;
-        //     }
-        // }
+                        // Générer une date dans la période du trimestre
+                        $date = $this->generateDateInTrimestre($trimestre, $type, $i);
 
+                        Evaluation::firstOrCreate(
+                            [
+                                'cours_id' => $cour->id,
+                                'type' => $type,
+                                'intitule' => $intitule,
+                                'date' => $date
+                            ],
+                            [
+                                'note_maximale' => $config['note_maximale']
+                            ]
+                        );
 
-        // // tableau destiné à contenir tous les cours dans la matière données dans ce niveau
-        // $list_cours = [];
+                        $evaluationsCreees++;
+                    }
+                }
+            }
 
+            $this->command->info("Évaluations créées pour le cours: {$cour->nom}");
+        }
 
-        // // Pour chaque classe du niveau on récupère les cours donnés et on compare l'identifiant de leur matière avec celle de la matière de l'évaluation
-        // foreach ($classes as $classe) {
-        //     foreach ($classe->cours as $cour) {
-        //         if ($cour->matiere->id === $mathematiques->id) {
-        //             array_push($list_cours, $cour);
-        //         }
-        //     }
-        // }
+        $this->command->info("Total évaluations créées: {$evaluationsCreees}");
+    }
 
+    /**
+     * Génère une date appropriée dans le trimestre selon le type d'évaluation
+     */
+    private function generateDateInTrimestre(Trimestre $trimestre, string $type, int $numero): string
+    {
+        $debut = $trimestre->date_debut ? strtotime($trimestre->date_debut) : strtotime('2024-09-01');
+        $fin = $trimestre->date_fin ? strtotime($trimestre->date_fin) : strtotime('2024-12-15');
 
-        // // Et enfin on créee une évaluation identique pour chacun des cours destiné à chaque classe
-        // foreach ($list_cours as $cours) {
-        //     Evaluation::create([
-        //         'intitule' => 'Devoir de Mathématiques 6eme',
-        //         'type' => 'devoir',
-        //         'date' => '2023-05-12',
-        //         'note_maximale' => 20,
-        //         'cours_id' => $cours->id
-        //     ]);
-        // }
+        $duree = $fin - $debut;
+
+        // Positionner les évaluations de manière logique dans le trimestre
+        switch ($type) {
+            case 'interrogation':
+                // Interrogations au début et au milieu du trimestre
+                if ($numero === 1) {
+                    $offset = $duree * 0.2; // 20% du trimestre
+                } else {
+                    $offset = $duree * 0.5; // 50% du trimestre
+                }
+                break;
+
+            case 'devoir':
+                // Devoir au milieu du trimestre
+                $offset = $duree * 0.6; // 60% du trimestre
+                break;
+
+            case 'composition':
+                // Composition à la fin du trimestre
+                $offset = $duree * 0.9; // 90% du trimestre
+                break;
+
+            default:
+                $offset = $duree * 0.5;
+        }
+
+        $timestamp = $debut + $offset;
+
+        // Éviter les weekends
+        $dayOfWeek = date('N', $timestamp);
+        if ($dayOfWeek == 6) $timestamp -= 86400; // Samedi -> Vendredi
+        if ($dayOfWeek == 7) $timestamp -= 2 * 86400; // Dimanche -> Vendredi
+
+        return date('Y-m-d', $timestamp);
     }
 }
