@@ -281,12 +281,48 @@ FRESH_ENV=0
 if [ ! -f "$ENV_FILE" ]; then
   [ -f "$ENV_EXAMPLE" ] || fail "Ni .env ni .env.example n'existent dans ce dossier."
   cp "$ENV_EXAMPLE" "$ENV_FILE"
-  chmod 600 "$ENV_FILE"
   FRESH_ENV=1
   ok "Fichier .env cree depuis .env.example."
 else
   backup_file "$ENV_FILE"
   info "Fichier .env existant conserve et complete."
+fi
+
+command -v openssl >/dev/null 2>&1 \
+  || fail "openssl est requis pour generer les secrets. Installez-le (apt install openssl)."
+
+# APP_KEY et HASHIDS_SALT sont normalement generes par l'entrypoint au premier
+# demarrage. On les genere ici, sur l'hote, pour une raison precise : le
+# conteneur tourne en www-data (uid/gid 33, cf. Dockerfile) alors que .env
+# appartient a l'utilisateur de l'hote. Lui accorder l'ECRITURE imposerait un
+# chmod 666 ou un chown root. En pre-remplissant les deux valeurs, l'entrypoint
+# ne fait plus que LIRE le fichier, ce qu'un simple droit de lecture autorise.
+#
+# Une valeur deja presente n'est JAMAIS regeneree : APP_KEY dechiffre les
+# donnees existantes et HASHIDS_SALT stabilise les identifiants dans les URLs.
+case "$(get_env APP_KEY)" in
+  base64:*) : ;;
+  *) set_env APP_KEY "base64:$(openssl rand -base64 32)"
+     ok "APP_KEY generee." ;;
+esac
+
+case "$(get_env HASHIDS_SALT)" in
+  ""|changeme*) set_env HASHIDS_SALT "$(openssl rand -hex 32)"
+                ok "HASHIDS_SALT genere." ;;
+esac
+
+# Droits de lecture pour le conteneur. Un mode 600 le fait echouer au
+# demarrage sur :
+#   file_get_contents(/var/www/html/.env): Failed to open stream: Permission denied
+# On restreint au groupe 33 (www-data) si l'on en a le droit, sinon on
+# retombe sur 644, qui reste lisible par les autres comptes de la machine.
+if chgrp 33 "$ENV_FILE" 2>/dev/null; then
+  chmod 640 "$ENV_FILE"
+  info "Droits .env : 640, groupe 33 (www-data du conteneur)."
+else
+  chmod 644 "$ENV_FILE"
+  info "Droits .env : 644 (lisible par le conteneur)."
+  info "Pour restreindre : sudo chgrp 33 .env && sudo chmod 640 .env"
 fi
 
 # Sur une premiere installation seulement : un mot de passe de base fort.
