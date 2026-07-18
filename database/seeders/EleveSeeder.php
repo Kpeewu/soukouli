@@ -59,8 +59,13 @@ class EleveSeeder extends Seeder
 
     /**
      * Run the database seeds.
+     *
+     * @param int $elevesMin Effectif minimum par classe. Les valeurs par
+     * @param int $elevesMax defaut preservent le comportement historique ;
+     *                       DemoSeeder passe des valeurs reduites via
+     *                       callWith().
      */
-    public function run(): void
+    public function run(int $elevesMin = 20, int $elevesMax = 25): void
     {
         $anneeScolaire = AnneeScolaire::where('courant', true)->first();
 
@@ -75,8 +80,7 @@ class EleveSeeder extends Seeder
         $elevesCount = 0;
 
         foreach ($classes as $classe) {
-            // 20-25 eleves par classe
-            $nombreEleves = rand(20, 25);
+            $nombreEleves = rand($elevesMin, $elevesMax);
 
             for ($i = 0; $i < $nombreEleves; $i++) {
                 $eleve = $this->createEleve($classe);
@@ -125,7 +129,11 @@ class EleveSeeder extends Seeder
             'matricule' => $matricule,
             'adresse' => $lieuNaissance . ', Togo',
             'redoublant' => rand(0, 10) < 2, // 20% de redoublants
-            'contact_tuteur' => json_encode([
+            // Pas de json_encode ici : le modele Eleve caste deja ces quatre
+            // champs en 'json'. Un encodage manuel produirait une chaine JSON
+            // encodee une seconde fois, et les vues (qui font $pere['nom'] ??
+            // '') afficheraient des champs vides sans lever d'erreur.
+            'contact_tuteur' => [
                 'nom' => $this->noms[array_rand($this->noms)],
                 'prenom' => $this->prenomsMasculins[array_rand($this->prenomsMasculins)],
                 'telephone' => $telephoneTuteur,
@@ -133,29 +141,29 @@ class EleveSeeder extends Seeder
                 'profession' => $this->professions[array_rand($this->professions)],
                 'situation_matrimoniale' => $this->situationsMatrimoniales[array_rand($this->situationsMatrimoniales)],
                 'lien' => ['Pere', 'Mere', 'Oncle', 'Tante', 'Tuteur'][rand(0, 4)]
-            ]),
-            'pere' => json_encode([
+            ],
+            'pere' => [
                 'nom' => $nom,
                 'prenom' => $this->prenomsMasculins[array_rand($this->prenomsMasculins)],
                 'telephone' => $prefixes[array_rand($prefixes)] . rand(100000, 999999),
                 'profession' => $this->professions[array_rand($this->professions)],
                 'adresse' => $lieuNaissance,
                 'situation_matrimoniale' => $this->situationsMatrimoniales[array_rand($this->situationsMatrimoniales)]
-            ]),
-            'mere' => json_encode([
+            ],
+            'mere' => [
                 'nom' => $this->noms[array_rand($this->noms)],
                 'prenom' => $this->prenomsFeminins[array_rand($this->prenomsFeminins)],
                 'telephone' => $prefixes[array_rand($prefixes)] . rand(100000, 999999),
                 'profession' => $this->professions[array_rand($this->professions)],
                 'adresse' => $lieuNaissance,
                 'situation_matrimoniale' => $this->situationsMatrimoniales[array_rand($this->situationsMatrimoniales)]
-            ]),
-            'sante' => json_encode([
+            ],
+            'sante' => [
                 'groupe' => ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'][rand(0, 7)],
                 'problemes' => rand(0, 5) < 1 ? 'Aucun probleme connu' : 'Aucun',
                 'restrictions' => 'Aucune',
                 'medicaments' => 'Aucun'
-            ])
+            ]
         ]);
 
         // Attacher l'eleve a la classe

@@ -22,7 +22,7 @@ services:
     #   - "127.0.0.1:5432:5432"
 
   app:
-    image: ${DOCKER_IMAGE:-toureydaou/soukouli}:${APP_VERSION:-latest}
+    image: ${DOCKER_IMAGE:-kpeewu/soukouli}:${APP_VERSION:-latest}
     restart: unless-stopped
     environment:
       CONTAINER_ROLE: app
@@ -43,7 +43,7 @@ services:
       start_period: 30s
 
   scheduler:
-    image: ${DOCKER_IMAGE:-toureydaou/soukouli}:${APP_VERSION:-latest}
+    image: ${DOCKER_IMAGE:-kpeewu/soukouli}:${APP_VERSION:-latest}
     restart: unless-stopped
     command: ["/bin/sh", "-c", "while true; do php artisan schedule:run --no-interaction --verbose; sleep 60; done"]
     environment:

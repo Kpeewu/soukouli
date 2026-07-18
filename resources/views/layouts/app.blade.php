@@ -36,6 +36,12 @@
 
 <body>
     @yield('content')
+
+    {{-- Inclus ici plutot que dans layouts.dashboard : c'est le seul point
+         qui couvre a la fois les vues du tableau de bord et la page de
+         connexion, ou le visiteur a justement besoin des identifiants. --}}
+    @include('components.demo-banner')
+
     <script src="{{ asset('assets/js/plugins/toastr/toastr.min.js') }}"></script>
     <script src="{{ asset('assets/js/core/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/core/js.cookie.min.js') }}"></script>

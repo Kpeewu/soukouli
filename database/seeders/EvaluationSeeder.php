@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Cours;
 use App\Models\Evaluation;
-use App\Models\Trimestre;
+use Carbon\Carbon;
+use Database\Seeders\Support\CalendrierScolaire;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -37,7 +38,7 @@ class EvaluationSeeder extends Seeder
     public function run(): void
     {
         // Récupérer tous les cours avec leurs classes et promotions
-        $cours = Cours::with('classe.promotion.trimestres', 'matiere')->get();
+        $cours = Cours::with('classe.promotion.trimestres', 'classe.promotion.anneeScolaire', 'matiere')->get();
 
         if ($cours->isEmpty()) {
             $this->command->warn('Aucun cours trouvé. Exécutez d\'abord CoursSeeder.');
@@ -52,10 +53,25 @@ class EvaluationSeeder extends Seeder
                 continue;
             }
 
-            $trimestres = $cour->classe->promotion->trimestres;
+            $annee = $cour->classe->promotion->anneeScolaire;
+
+            if (!$annee) {
+                continue;
+            }
+
+            // Le rang de la periode se deduit de l'ordre de creation
+            // (PromotionSeeder les cree sequentiellement), pas d'un parsing
+            // de l'intitule qui serait fragile.
+            $trimestres = $cour->classe->promotion->trimestres->sortBy('id')->values();
             $matiereNom = $cour->matiere ? $cour->matiere->intitule : 'Matière';
 
-            foreach ($trimestres as $trimestre) {
+            foreach ($trimestres as $index => $trimestre) {
+                [$debutPeriode, $finPeriode] = CalendrierScolaire::fenetre(
+                    $annee,
+                    $index + 1,
+                    $trimestres->count()
+                );
+
                 // Créer les évaluations pour chaque type
                 foreach ($this->typesEvaluation as $type => $config) {
                     $nombre = $config['nombre_par_trimestre'];
@@ -67,7 +83,7 @@ class EvaluationSeeder extends Seeder
                             : $config['intitule_pattern'] . " de {$matiereNom}";
 
                         // Générer une date dans la période du trimestre
-                        $date = $this->generateDateInTrimestre($trimestre, $type, $i);
+                        $date = $this->generateDate($debutPeriode, $finPeriode, $type, $i);
 
                         Evaluation::firstOrCreate(
                             [
@@ -93,47 +109,28 @@ class EvaluationSeeder extends Seeder
     }
 
     /**
-     * Génère une date appropriée dans le trimestre selon le type d'évaluation
+     * Génère une date appropriée dans la période selon le type d'évaluation.
+     *
+     * Les fenêtres étant disjointes d'une période à l'autre, la date suffit
+     * ensuite à rattacher l'évaluation à son trimestre (cf. NoteSeeder).
      */
-    private function generateDateInTrimestre(Trimestre $trimestre, string $type, int $numero): string
+    private function generateDate(Carbon $debut, Carbon $fin, string $type, int $numero): string
     {
-        $debut = $trimestre->date_debut ? strtotime($trimestre->date_debut) : strtotime('2024-09-01');
-        $fin = $trimestre->date_fin ? strtotime($trimestre->date_fin) : strtotime('2024-12-15');
-
-        $duree = $fin - $debut;
+        $duree = $debut->diffInSeconds($fin);
 
         // Positionner les évaluations de manière logique dans le trimestre
-        switch ($type) {
-            case 'interrogation':
-                // Interrogations au début et au milieu du trimestre
-                if ($numero === 1) {
-                    $offset = $duree * 0.2; // 20% du trimestre
-                } else {
-                    $offset = $duree * 0.5; // 50% du trimestre
-                }
-                break;
+        $ratio = match ($type) {
+            // Interrogations au début et au milieu du trimestre
+            'interrogation' => $numero === 1 ? 0.2 : 0.5,
+            // Devoir au milieu du trimestre
+            'devoir' => 0.6,
+            // Composition à la fin du trimestre
+            'composition' => 0.9,
+            default => 0.5,
+        };
 
-            case 'devoir':
-                // Devoir au milieu du trimestre
-                $offset = $duree * 0.6; // 60% du trimestre
-                break;
+        $date = $debut->copy()->addSeconds((int) round($duree * $ratio));
 
-            case 'composition':
-                // Composition à la fin du trimestre
-                $offset = $duree * 0.9; // 90% du trimestre
-                break;
-
-            default:
-                $offset = $duree * 0.5;
-        }
-
-        $timestamp = $debut + $offset;
-
-        // Éviter les weekends
-        $dayOfWeek = date('N', $timestamp);
-        if ($dayOfWeek == 6) $timestamp -= 86400; // Samedi -> Vendredi
-        if ($dayOfWeek == 7) $timestamp -= 2 * 86400; // Dimanche -> Vendredi
-
-        return date('Y-m-d', $timestamp);
+        return CalendrierScolaire::jourOuvre($date)->format('Y-m-d');
     }
 }

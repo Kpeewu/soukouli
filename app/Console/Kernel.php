@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\DemoReset;
 use App\Console\Commands\NouvelleAnneeScolaire;
 use App\Console\Commands\PassageEleves;
 use App\Services\CronScheduleService;
@@ -31,6 +32,22 @@ class Kernel extends ConsoleKernel
                      false
                  );
              })->sendOutputTo(storage_path('logs/passageElevesSchedule.log'))->withoutOverlapping();
+
+        // Instance de demonstration : on repart d'une base propre chaque nuit,
+        // quoi qu'aient saisi les visiteurs dans la journee.
+        //
+        // --force est indispensable : le conteneur scheduler n'a pas de TTY,
+        // et sans lui confirm() renverrait false et le reset echouerait
+        // silencieusement chaque nuit.
+        //
+        // Pas de onOneServer() : il exige un driver de cache verrouillable,
+        // or CACHE_DRIVER=file. Il n'y a de toute facon qu'un scheduler.
+        if (config('demo.enabled') && config('demo.auto_reset')) {
+            $schedule->command(DemoReset::class, ['--force' => true])
+                     ->dailyAt(config('demo.auto_reset_time', '03:00'))
+                     ->sendOutputTo(storage_path('logs/demoReset.log'))
+                     ->withoutOverlapping();
+        }
     }
 
     /**

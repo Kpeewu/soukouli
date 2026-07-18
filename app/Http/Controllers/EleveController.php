@@ -120,10 +120,13 @@ class EleveController extends Controller
             'lieu_naissance' => $request->lieu_naissance,
             'adresse' => $request->adresse,
             'matricule' => strtolower($matricule),
-            'pere' => json_encode($pere),
-            'mere' => json_encode($mere),
-            'contact_tuteur' => json_encode($contact_tuteur),
-            'sante' => json_encode($sante),
+            // Ces quatre champs sont castes en 'json' sur le modele : passer
+            // le tableau brut. Un json_encode ici encoderait une seconde fois
+            // et les vues afficheraient des champs vides silencieusement.
+            'pere' => $pere,
+            'mere' => $mere,
+            'contact_tuteur' => $contact_tuteur,
+            'sante' => $sante,
             'user_id' => $user->id,
         ]);
 
@@ -216,10 +219,11 @@ class EleveController extends Controller
                 'date_naissance' => $request->date_naissance,
                 'lieu_naissance' => $request->lieu_naissance,
                 'adresse' => $request->adresse,
-                'pere' => json_encode($pere),
-                'mere' => json_encode($mere),
-                'contact_tuteur' => json_encode($contact_tuteur),
-                'sante' => json_encode($sante),
+                // Castes en 'json' sur le modele : pas de json_encode manuel.
+                'pere' => $pere,
+                'mere' => $mere,
+                'contact_tuteur' => $contact_tuteur,
+                'sante' => $sante,
             ]);
 
             if ($ancienneClasse && $classe->id !== $ancienneClasse->id) {

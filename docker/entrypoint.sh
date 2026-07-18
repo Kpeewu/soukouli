@@ -69,7 +69,20 @@ if [ "$ROLE" = "app" ]; then
   # (plus fiable qu'un fichier sentinelle si seul un des deux volumes,
   # BD ou storage, est reinitialise independamment de l'autre).
   USER_COUNT=$(PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT:-5432}" -U "${DB_USERNAME}" -d "${DB_DATABASE}" -tAc "SELECT COUNT(*) FROM users" 2>/dev/null || echo 0)
-  if [ "${USER_COUNT}" = "0" ]; then
+
+  # Le defaut ":-false" est obligatoire : `set -eu` fait echouer le conteneur
+  # sur une variable non definie, et DEMO_MODE est absent des .env existants.
+  if [ "${DEMO_MODE:-false}" = "true" ]; then
+    if [ "${USER_COUNT}" = "0" ]; then
+      # DemoSeeder cree lui-meme les roles, l'annee scolaire et les cycles :
+      # il remplace ProductionSeeder, on n'enchaine pas les deux.
+      echo ">>> DEMO_MODE actif - chargement des donnees de demonstration..."
+      php artisan demo:seed --force
+    else
+      echo ">>> DEMO_MODE actif - base deja peuplee, seeding ignore."
+      echo ">>> Pour repartir a neuf : docker compose exec app php artisan demo:reset --force"
+    fi
+  elif [ "${USER_COUNT}" = "0" ]; then
     echo ">>> Installation vierge detectee - creation des donnees de reference et du compte admin..."
     php artisan db:seed --class="Database\\Seeders\\ProductionSeeder" --force
   fi
