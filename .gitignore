@@ -8,6 +8,11 @@
 .env
 .env.backup
 .env.production
+/backups
+/docker-compose.override.yml
+/docker/nginx/*.conf
+!/docker/nginx/default.conf
+/deploy/nginx-vps
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml

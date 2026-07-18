@@ -60,8 +60,12 @@ services:
   webserver:
     image: nginx:1.27-alpine
     restart: unless-stopped
+    # APP_BIND_IP vaut 0.0.0.0 par defaut : comportement inchange pour les
+    # installations existantes. Derriere un reverse proxy installe sur la
+    # meme machine, le mettre a 127.0.0.1 pour que l'application ne soit
+    # joignable que par le proxy, et jamais directement depuis internet.
     ports:
-      - "${APP_PORT:-80}:80"
+      - "${APP_BIND_IP:-0.0.0.0}:${APP_PORT:-80}:80"
     volumes:
       - public_assets:/var/www/html/public:ro
       - app_storage:/var/www/html/storage:ro
