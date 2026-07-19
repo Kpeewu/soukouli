@@ -460,7 +460,20 @@ if [ "$BEHIND_PROXY" = "1" ]; then
 else
   set_env APP_BIND_IP "0.0.0.0"
 fi
-[ -n "$APP_VERSION_ARG" ] && set_env APP_VERSION "$APP_VERSION_ARG"
+# Tag de l'image. Le defaut "demo" est impose : "latest" est construit depuis
+# la branche principale et peut ne pas contenir les commandes demo:* ni le
+# seeder de demonstration. On s'y casserait les dents sans message clair --
+# l'application demarre, mais aucun compte de test n'existe et la connexion
+# echoue sur "identifiants invalides".
+if [ -n "$APP_VERSION_ARG" ]; then
+  set_env APP_VERSION "$APP_VERSION_ARG"
+else
+  case "$(get_env APP_VERSION)" in
+    demo|demo-*) : ;;
+    *) set_env APP_VERSION "demo"
+       info "APP_VERSION fixe a 'demo' (image publiee par docker-publish-demo.yml)." ;;
+  esac
+fi
 
 # Reglages propres a la demo.
 set_env DEMO_MODE "true"
@@ -803,6 +816,29 @@ if [ "$HEALTHY" != "1" ]; then
 fi
 
 ok "Les services sont demarres et l'application repond."
+
+# --- L'image sait-elle faire la demo ? ------------------------------------
+
+# Une image antérieure a l'ajout du mode demonstration demarre parfaitement
+# mais ne cree aucun compte de test : le seul symptome est un "identifiants
+# invalides" au portail, impossible a rattacher a sa cause. On verifie donc
+# explicitement la presence des commandes demo:*.
+step "Verification du support du mode demonstration"
+
+if $COMPOSE exec -T app php artisan list demo >/dev/null 2>&1; then
+  ok "L'image expose les commandes demo:* ."
+else
+  echo
+  warn "L'image deployee ne contient PAS le mode demonstration."
+  warn "Elle demarre, mais aucun compte de test n'est cree : la connexion"
+  warn "echouera avec \"identifiants invalides\"."
+  echo
+  info "Image utilisee : $(get_env DOCKER_IMAGE):$(get_env APP_VERSION)"
+  info "Corriger en publiant l'image de demo (workflow"
+  info "docker-publish-demo.yml, tag 'demo'), puis :"
+  info "  $COMPOSE pull && $COMPOSE up -d"
+  exit 1
+fi
 
 # --- 8. Rechargement immediat des donnees (--reset) -----------------------
 
