@@ -56,7 +56,7 @@ Auth::routes();
 
 Route::get('/', function () {
     return view('auth.login');
-});
+})->middleware(['guest', 'nocache']);
 
 
 
