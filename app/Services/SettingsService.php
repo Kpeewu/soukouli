@@ -195,7 +195,7 @@ class SettingsService
             'school_logo' => ['value' => 'assets/images/logo2.png', 'type' => 'image', 'group' => 'display'],
             'login_background' => ['value' => 'assets/images/primaire.jpg', 'type' => 'image', 'group' => 'display'],
             'system_name' => ['value' => 'Soukouli', 'type' => 'string', 'group' => 'general'],
-            'system_version' => ['value' => '1.1.0', 'type' => 'string', 'group' => 'general'],
+            'system_version' => ['value' => '1.2.0-alpha', 'type' => 'string', 'group' => 'general'],
         ];
     }
 
