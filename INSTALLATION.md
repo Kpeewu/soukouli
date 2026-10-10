@@ -159,7 +159,7 @@ Une fois connecté en tant qu'administrateur :
 
 1. Rendez-vous dans **Paramètres** pour renseigner le nom de votre établissement, son logo, ses coordonnées, etc.
 2. Rendez-vous dans **Utilisateurs** pour créer les comptes réels de votre équipe (directeurs, comptables, secrétaires, surveillants, professeurs) — le compte `admin` initial ne sert qu'à l'administration système, pas à la gestion scolaire courante.
-3. Consultez le changelog (icône `v1.1.0` en bas de la barre latérale) pour voir le détail des fonctionnalités disponibles dans cette version.
+3. Consultez le changelog (icône `v1.2.0-alpha` en bas de la barre latérale) pour voir le détail des fonctionnalités disponibles dans cette version.
 
 ---
 
