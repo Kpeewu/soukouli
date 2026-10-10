@@ -138,7 +138,7 @@ class EleveController extends Controller
             ]);
         }
 
-        return redirect()->to($url)->with('notification', ['type' => 'danger', 'message' => 'Nouvel élève inscrit']);
+        return redirect()->route('classe.index', $classe)->with('notification', ['type' => 'success', 'message' => 'Nouvel élève inscrit']);
     }
 
     public function edit(Eleve $eleve, Classe $classe)
@@ -238,7 +238,7 @@ class EleveController extends Controller
                 . ' (' . $changementClasse['notes_reportees'] . ' note(s) de devoir/composition reportée(s))';
         }
 
-        return redirect()->to($url)->with('notification', ['type' => 'success', 'message' => $message]);
+        return redirect()->route('classe.index', $classe)->with('notification', ['type' => 'success', 'message' => $message]);
     }
 
 
@@ -390,9 +390,8 @@ class EleveController extends Controller
 
     public function import(Request $request)
     {
-        $url = url()->previous();
         Excel::import(new ElevesImport, $request->file('excel'));
-        return redirect()->to($url)->with('notification', ['type' => 'success', 'message' => 'Élèves importés']);
+        return $this->redirectBack('dashboard')->with('notification', ['type' => 'success', 'message' => 'Élèves importés']);
     }
 
     public function template()

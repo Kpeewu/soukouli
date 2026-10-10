@@ -65,9 +65,7 @@
             <div class="block-header">
                 <h3 class="block-title">Liste des retards de {{ $assiduite->eleve->nom }}
                     {{ $assiduite->eleve->prenom }}</h3>
-                <a href="{{ route('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $classe]) }}"
-                    class="btn btn-secondary mr-1">
-                    <i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                <x-back-button :fallback="route('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $classe])" class="btn btn-secondary mr-1" />
                 @if($canManage)
                     <a class="btn btn-success"
                         href="{{ route('retard.create', ['assiduite' => $assiduite, 'classe' => $classe]) }}">Ajouter

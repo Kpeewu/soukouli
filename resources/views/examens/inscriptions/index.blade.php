@@ -40,9 +40,7 @@
                             <i class="fa fa-user-plus mr-1"></i> Inscrire des eleves
                         </a>
                     @endunless
-                    <a href="{{ route('sessions.show', $session) }}" class="btn btn-secondary">
-                        <i class="fa fa-arrow-left mr-1"></i> Retour
-                    </a>
+                    <x-back-button :fallback="route('sessions.show', $session)" class="btn btn-secondary" />
                 </div>
             </div>
 

@@ -82,9 +82,7 @@
                         <a href="{{ route('resultats.liste', $session) }}" class="btn btn-primary btn-block mb-2">
                             <i class="fa fa-poll"></i> Voir les resultats
                         </a>
-                        <a href="{{ route('sessions.index') }}" class="btn btn-secondary btn-block">
-                            <i class="fa fa-arrow-left"></i> Retour
-                        </a>
+                        <x-back-button :fallback="route('sessions.index')" class="btn btn-secondary btn-block" />
                     </div>
                 </div>
             </div>

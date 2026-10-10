@@ -81,7 +81,7 @@
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-success">Creer la session</button>
-                        <a href="{{ route('sessions.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('sessions.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>

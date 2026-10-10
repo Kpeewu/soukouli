@@ -136,7 +136,7 @@
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-success">Mettre à jour</button>
-                        <a href="{{ route('examens-officiels.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('examens-officiels.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>

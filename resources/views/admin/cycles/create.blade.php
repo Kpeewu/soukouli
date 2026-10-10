@@ -222,7 +222,7 @@
                         <button type="button" class="btn btn-alt-secondary" id="btn-reset-cycle">
                             <i class="fa fa-undo mr-1" aria-hidden="true"></i>Réinitialiser
                         </button>
-                        <a href="{{ route('cycles.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('cycles.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>
