@@ -34,6 +34,7 @@
                 <div class="block block-rounded">
                     <div class="block-header block-header-default">
                         <h3 class="block-title">Informations</h3>
+                        <x-back-button :fallback="route('comptabilite.eleves')" class="btn btn-sm btn-secondary" />
                     </div>
                     <div class="block-content pb-3">
                         <table class="table table-borderless">

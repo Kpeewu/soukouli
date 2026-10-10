@@ -57,7 +57,10 @@
         <div class="block block-rounded p-5">
             <form action="{{ route('classe.store') }}" method="post">
                 @csrf
-                <h3>Nouvelle classe de {{ $promotion->nom }}</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>Nouvelle classe de {{ $promotion->nom }}</h3>
+                    <x-back-button :fallback="route('classe.list', $promotion)" />
+                </div>
 
                 <div class="col-12 py-3 row justify-content-center">
                     <div class="row justify-content-center align-items-center mx-0 px-0">

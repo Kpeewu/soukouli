@@ -88,8 +88,7 @@
                 <div class="d-flex mx-0 px-0 justify-content-between align-items-center mb-5">
                     <h3 class="m-0">Informations de {{ $eleve->nom }} {{ $eleve->prenom }}</h3>
 
-                    <a href="{{ route('classe.index', $classe) }}" class="btn btn-secondary"><i
-                            class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                    <x-back-button :fallback="route('classe.index', $classe)" />
                 </div>
 
                 <p class="font-size-sm text-muted">

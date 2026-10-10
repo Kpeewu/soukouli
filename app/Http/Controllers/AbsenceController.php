@@ -54,7 +54,7 @@ class AbsenceController extends Controller
 
         $absence = Absence::create($request->all());
 
-        return redirect()->route('retard.index', ['assiduite' => $absence->assiduite, 'classe' => $classe])->with('notification', ['type' => 'success', 'message' => 'Absence bien enregistrée']);
+        return redirect()->route('absence.index', ['assiduite' => $absence->assiduite, 'classe' => $classe])->with('notification', ['type' => 'success', 'message' => 'Absence bien enregistrée']);
     }
 
     public function destroy(Absence $absence)

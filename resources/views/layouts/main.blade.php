@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/oneui.min.css') }}">
 
     <title>CPL Mon Avenir</title>
+
+    <link rel="icon" href="{{ $schoolSettings['school_logo_url'] ?? asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ $schoolSettings['school_logo_url'] ?? asset('assets/media/favicons/apple-touch-icon-180x180.png') }}">
 </head>
 
 <body>

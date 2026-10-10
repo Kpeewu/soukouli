@@ -60,13 +60,12 @@
         <div class="block block-rounded p-5">
             <form action="{{ route('comportement.update', $assiduite) }}" method="post">
                 @csrf
+                <x-back-field />
                 <div class="d-flex mx-0 px-0 mb-5 justify-content-between align-items-center">
                     <h3 class="m-0">Remarques sur le comportement de {{ $assiduite->eleve->nom }}
                         {{ $assiduite->eleve->prenom }}</h3>
 
-                    <a href="{{ route('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $classe]) }}"
-                        class="btn btn-secondary mr-1">
-                        <i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                    <x-back-button :fallback="route('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $classe])" class="btn btn-secondary mr-1" />
                 </div>
 
                 <div class="col-12 py-3">

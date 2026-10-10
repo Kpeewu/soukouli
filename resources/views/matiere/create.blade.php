@@ -61,6 +61,7 @@
                 <p class="font-size-sm text-muted">
                     Ajoutez une nouvelle matière enseignée dans votre établissement.
                 </p>
+                <x-back-button :fallback="route('matiere.index')" />
                 <form action="{{ route('matiere.store') }}" method="post">
                     @csrf
                     <div class="col-12 py-3">

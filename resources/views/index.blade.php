@@ -7,7 +7,7 @@
                 <div class="flex-sm-fill">
                     <div class="d-flex justify-content-between">
                         <h1 class="h2 font-w700 mb-2">
-                            CPL Mon Avenir
+                            {{ $schoolSettings['school_full_name'] ?? 'Complexe Prive Laique Mon Avenir' }}
                         </h1>
                         <h2 class="font-w700 mb-2">
                             Annee Scolaire: <span class="text-primary">{{ $anneeCourante->annee }}</span>
@@ -730,7 +730,7 @@
                     <div class="block block-rounded">
                         <div class="block-content block-content-full text-center py-5">
                             <i class="fa fa-user-circle fa-4x text-muted mb-3"></i>
-                            <h3>Bienvenue sur CPL Mon Avenir</h3>
+                            <h3>Bienvenue sur {{ $schoolSettings['school_full_name'] ?? 'Complexe Prive Laique Mon Avenir' }}</h3>
                             <p class="text-muted">
                                 Votre compte n'a pas de role specifique assigne.<br>
                                 Veuillez contacter l'administrateur pour obtenir les acces necessaires.

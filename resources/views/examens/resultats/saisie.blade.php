@@ -35,9 +35,7 @@
                     <small class="text-muted">({{ $inscriptions->count() }} candidats)</small>
                 </h3>
                 <div>
-                    <a href="{{ route('sessions.show', $session) }}" class="btn btn-secondary">
-                        <i class="fa fa-arrow-left mr-1"></i> Retour
-                    </a>
+                    <x-back-button :fallback="route('sessions.show', $session)" />
                 </div>
             </div>
 

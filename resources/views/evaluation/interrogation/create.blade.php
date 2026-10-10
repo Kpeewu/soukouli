@@ -61,8 +61,7 @@
                 @csrf
                 <div class="d-flex mx-0 mb-5 px-0 justify-content-between align-items-center">
                     <h3>Nouvelle interrogation de {{ $cours->nom }}</h3>
-                    <a href="{{ route('interrogation.cours', $classe) }}" class="btn btn-secondary"><i
-                            class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                    <x-back-button :fallback="route('interrogation.cours', $classe)" />
                 </div>
 
 

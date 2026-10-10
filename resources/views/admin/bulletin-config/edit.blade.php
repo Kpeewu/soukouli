@@ -64,7 +64,7 @@
                         <button type="submit" class="btn btn-primary btn-sm">
                             <i class="fa fa-save mr-1"></i>Enregistrer l'ordre
                         </button>
-                        <a href="{{ route('bulletin-config.index') }}" class="btn btn-alt-secondary btn-sm">Annuler</a>
+                        <x-back-button :fallback="route('bulletin-config.index')" label="Annuler" class="btn btn-alt-secondary btn-sm" />
                     </form>
                 @endif
             </div>

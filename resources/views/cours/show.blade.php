@@ -58,7 +58,10 @@
 
             <form action="{{ route('cours.update', ['cours' => $cours]) }}" method="post">
                 @csrf
-                <h3>{{ $cours->matiere->intitule }}</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>{{ $cours->matiere->intitule }}</h3>
+                    <x-back-button :fallback="route('cours.index', $cours->classe)" />
+                </div>
 
                 <div class="col-12 py-3">
                     <div class="row justify-content-around mx-0 px-0">

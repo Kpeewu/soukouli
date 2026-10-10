@@ -145,7 +145,7 @@
                                 <button type="submit" class="btn btn-success" {{ $elevesEligibles->isEmpty() ? 'disabled' : '' }}>
                                     <i class="fa fa-user-plus mr-1"></i> Inscrire les eleves selectionnes
                                 </button>
-                                <a href="{{ route('sessions.show', $session) }}" class="btn btn-secondary">Annuler</a>
+                                <x-back-button :fallback="route('sessions.show', $session)" label="Annuler" class="btn btn-secondary" />
                             </div>
                         </form>
                     </div>

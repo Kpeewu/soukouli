@@ -120,10 +120,10 @@ class EleveController extends Controller
             'lieu_naissance' => $request->lieu_naissance,
             'adresse' => $request->adresse,
             'matricule' => strtolower($matricule),
-            'pere' => json_encode($pere),
-            'mere' => json_encode($mere),
-            'contact_tuteur' => json_encode($contact_tuteur),
-            'sante' => json_encode($sante),
+            'pere' => $pere,
+            'mere' => $mere,
+            'contact_tuteur' => $contact_tuteur,
+            'sante' => $sante,
             'user_id' => $user->id,
         ]);
 
@@ -138,7 +138,7 @@ class EleveController extends Controller
             ]);
         }
 
-        return redirect()->to($url)->with('notification', ['type' => 'danger', 'message' => 'Nouvel élève inscrit']);
+        return redirect()->route('classe.index', $classe)->with('notification', ['type' => 'success', 'message' => 'Nouvel élève inscrit']);
     }
 
     public function edit(Eleve $eleve, Classe $classe)
@@ -216,10 +216,10 @@ class EleveController extends Controller
                 'date_naissance' => $request->date_naissance,
                 'lieu_naissance' => $request->lieu_naissance,
                 'adresse' => $request->adresse,
-                'pere' => json_encode($pere),
-                'mere' => json_encode($mere),
-                'contact_tuteur' => json_encode($contact_tuteur),
-                'sante' => json_encode($sante),
+                'pere' => $pere,
+                'mere' => $mere,
+                'contact_tuteur' => $contact_tuteur,
+                'sante' => $sante,
             ]);
 
             if ($ancienneClasse && $classe->id !== $ancienneClasse->id) {
@@ -238,7 +238,7 @@ class EleveController extends Controller
                 . ' (' . $changementClasse['notes_reportees'] . ' note(s) de devoir/composition reportée(s))';
         }
 
-        return redirect()->to($url)->with('notification', ['type' => 'success', 'message' => $message]);
+        return redirect()->route('classe.index', $classe)->with('notification', ['type' => 'success', 'message' => $message]);
     }
 
 
@@ -390,9 +390,8 @@ class EleveController extends Controller
 
     public function import(Request $request)
     {
-        $url = url()->previous();
         Excel::import(new ElevesImport, $request->file('excel'));
-        return redirect()->to($url)->with('notification', ['type' => 'success', 'message' => 'Élèves importés']);
+        return $this->redirectBack('dashboard')->with('notification', ['type' => 'success', 'message' => 'Élèves importés']);
     }
 
     public function template()

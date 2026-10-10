@@ -63,9 +63,7 @@
                 <div class="d-flex mx-0 px-0 mb-5 justify-content-between align-items-center">
                     <h3 class="m-0">Ajouter un retard</h3>
 
-                    <a href="{{ route('retard.index', ['assiduite' => $assiduite, 'classe' => $classe]) }}"
-                        class="btn btn-secondary mr-1">
-                        <i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                    <x-back-button :fallback="route('retard.index', ['assiduite' => $assiduite, 'classe' => $classe])" class="btn btn-secondary mr-1" />
                 </div>
 
                 <div class="col-12 py-3">

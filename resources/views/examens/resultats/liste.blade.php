@@ -66,9 +66,7 @@
                             <i class="fa fa-edit mr-1"></i> Modifier
                         </a>
                     @endunless
-                    <a href="{{ route('sessions.show', $session) }}" class="btn btn-info">
-                        <i class="fa fa-arrow-left mr-1"></i> Retour
-                    </a>
+                    <x-back-button :fallback="route('sessions.show', $session)" class="btn btn-info" />
                 </div>
             </div>
 

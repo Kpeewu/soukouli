@@ -95,9 +95,7 @@
                         <hr>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('recus.index') }}" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left mr-2"></i>Retour
-                            </a>
+                            <x-back-button :fallback="route('recus.index')" />
                             @if(!$recu->annule)
                                 <a href="{{ route('recus.pdf', $recu) }}" class="btn btn-primary" target="_blank">
                                     <i class="fa fa-file-pdf mr-2"></i>Telecharger PDF

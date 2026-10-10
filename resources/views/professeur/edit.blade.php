@@ -166,7 +166,7 @@
                         <button class="btn btn-success" type="submit">
                             <i class="fa fa-save mr-1" aria-hidden="true"></i>Modifier
                         </button>
-                        <a href="{{ route('professeur.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('professeur.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>
