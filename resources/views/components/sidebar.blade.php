@@ -2,12 +2,15 @@
     <!-- Side Header -->
     <div class="content-header bg-white-5">
         <!-- Logo -->
-        <a class="font-w600 text-dual" href="{{ route('dashboard') }}">
+        <a class="font-w600 text-dual d-flex align-items-center" href="{{ route('dashboard') }}">
             <span class="smini-visible">
-                <i class="fa fa-circle-notch text-primary"></i>
+                <img src="{{ $schoolSettings['school_logo_url'] ?? asset('assets/images/logo.png') }}" alt=""
+                    style="height: 28px; width: auto;">
             </span>
-            <span class="smini-hide font-size-h5 tracking-wider">
-                    {{ $schoolSettings['school_name'] ?? 'Soukouli' }}
+            <span class="smini-hide d-flex align-items-center font-size-h5 tracking-wider">
+                <img src="{{ $schoolSettings['school_logo_url'] ?? asset('assets/images/logo.png') }}" alt=""
+                    class="mr-2" style="height: 32px; width: auto;">
+                {{ $schoolSettings['school_name'] ?? 'Soukouli' }}
             </span>
         </a>
         <!-- END Logo -->

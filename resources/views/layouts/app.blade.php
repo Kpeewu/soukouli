@@ -11,6 +11,9 @@
 
     <title>{{ config('app.name', 'CPL Mon Avenir') }}</title>
 
+    <link rel="icon" href="{{ $schoolSettings['school_logo_url'] ?? asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ $schoolSettings['school_logo_url'] ?? asset('assets/media/favicons/apple-touch-icon-180x180.png') }}">
+
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 
     <!-- Fonts -->
