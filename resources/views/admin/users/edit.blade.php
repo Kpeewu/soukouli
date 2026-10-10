@@ -247,7 +247,7 @@
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-success">Mettre à jour</button>
-                        <a href="{{ route('users.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('users.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>

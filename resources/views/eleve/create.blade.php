@@ -86,7 +86,10 @@
 
         <div class="block block-rounded">
             <div class="block-content px-5">
-                <h3>Formulaire d'inscription</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>Formulaire d'inscription</h3>
+                    <x-back-button :fallback="route('dashboard')" />
+                </div>
                 <p class="font-size-sm text-muted">
                     Inscrivez un nouvel élève dans votre établissement. Les champs marqués d'un <span
                         class="text-danger">*</span> sont obligatoires.

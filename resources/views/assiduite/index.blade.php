@@ -60,8 +60,7 @@
             <div class="block-header">
                 <h3 class="block-title">Retards et absences de {{ $eleve->nom }} {{ $eleve->prenom }}</h3>
 
-                <a href="{{ route('classe.index', $classe) }}" class="btn btn-secondary"><i
-                        class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                <x-back-button :fallback="route('classe.index', $classe)" />
             </div>
 
             <div class="block-content">

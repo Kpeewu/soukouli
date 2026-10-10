@@ -58,7 +58,10 @@
 
             <div class="block-header">
                 <h3 class="block-title">Importer les élèves de la classe de {{ $classe->nom }}</h3>
-                <a class="btn btn-secondary" href="{{ route('eleves.template') }}">Template</a>
+                <div>
+                    <x-back-button :fallback="route('classe.index', $classe)" class="btn btn-secondary mr-1" />
+                    <a class="btn btn-secondary" href="{{ route('eleves.template') }}">Template</a>
+                </div>
             </div>
 
             <div class="block-content">
@@ -68,6 +71,7 @@
 
                 <form action="{{ route('eleves.import') }}" method="post" enctype="multipart/form-data">
                     @csrf
+                    <x-back-field />
                     <div class="row mx-0 px-0 align-items-center">
                         <div class="form-group col-10">
                             <label for="">Chargez le fichier excel</label>

@@ -69,7 +69,7 @@
                         <button type="submit" class="btn btn-success">
                             <i class="fa fa-check mr-2"></i>Creer
                         </button>
-                        <a href="{{ route('types-frais.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('types-frais.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>

@@ -64,8 +64,7 @@
             <div class="block-header">
                 <h3 class="block-title">Liste des evaluations de la classe de {{ $classe->nom }} en
                     {{ $cours->matiere->intitule }}</h3>
-                <a href="{{ route('view_interrogation_cours', $classe) }}" class="btn btn-secondary"><i
-                        class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                <x-back-button :fallback="route('view_interrogation_cours', $classe)" />
             </div>
             <div class="block-content">
                 <p class="font-size-sm text-muted">

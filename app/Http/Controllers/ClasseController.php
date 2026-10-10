@@ -117,7 +117,7 @@ class ClasseController extends Controller
             ]);
         }
 
-        return redirect()->to($url)->with('notification', ['type' =>  'success', 'message' => 'Nouvelle de classe de ' . $promotion->nom . ' crée']);
+        return redirect()->route('classe.list', $promotion)->with('notification', ['type' =>  'success', 'message' => 'Nouvelle de classe de ' . $promotion->nom . ' crée']);
     }
 
     public function destroy(Classe $classe)

@@ -136,7 +136,7 @@
                         <button type="submit" class="btn btn-success">
                             <i class="fa fa-check mr-2"></i>Creer la configuration
                         </button>
-                        <a href="{{ route('configurations-frais.index') }}" class="btn btn-secondary">Annuler</a>
+                        <x-back-button :fallback="route('configurations-frais.index')" label="Annuler" class="btn btn-secondary" />
                     </div>
                 </form>
             </div>

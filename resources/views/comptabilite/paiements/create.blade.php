@@ -180,7 +180,7 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="fa fa-check mr-2"></i>Enregistrer le paiement
                                 </button>
-                                <a href="{{ route('comptabilite.eleve.fiche', $eleve) }}" class="btn btn-secondary">Annuler</a>
+                                <x-back-button :fallback="route('comptabilite.eleve.fiche', $eleve)" label="Annuler" class="btn btn-secondary" />
                             </div>
                         </form>
                     </div>

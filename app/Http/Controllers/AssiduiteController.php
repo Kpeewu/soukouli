@@ -65,8 +65,6 @@ class AssiduiteController extends Controller
     {
         $this->authorizeManageAssiduite($assiduite->eleve);
 
-        $url = url()->previous();
-
         $avertissement = $request->avertissement;
         $blame = $request->blame;
 
@@ -123,6 +121,6 @@ class AssiduiteController extends Controller
             'comportement' => json_encode($comportement)
         ]);
 
-        return redirect()->to($url)->with('notification', ['type' =>  'success', 'message' => "Comportement de l'élève mis à jour"]);
+        return $this->redirectBack('assiduite.index', ['eleve' => $assiduite->eleve, 'classe' => $assiduite->eleve->getClasseActuelle()])->with('notification', ['type' =>  'success', 'message' => "Comportement de l'élève mis à jour"]);
     }
 }

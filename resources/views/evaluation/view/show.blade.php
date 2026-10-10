@@ -104,11 +104,9 @@
                 <div class="d-flex mx-0 mb-5 px-0 justify-content-between align-items-center">
                     <h3>Notes de la classe de {{ $evaluation->cours->classe->nom }}</h3>
                     @if ($evaluation->type === 'devoir' || $evaluation->type === 'composition')
-                        <a href="{{ route('evaluation.index', ['promotion' => $promotion, 'matiere' => $evaluation->cours->matiere, 'trimestre' => $trimestre]) }}"
-                            class="btn btn-secondary"><i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                        <x-back-button :fallback="route('evaluation.index', ['promotion' => $promotion, 'matiere' => $evaluation->cours->matiere, 'trimestre' => $trimestre])" />
                     @else
-                        <a href="{{ route('interrogation.index', ['classe' => $evaluation->cours->classe, 'cours' => $evaluation->cours, 'trimestre' => $trimestre]) }}"
-                            class="btn btn-secondary"><i class="fa fa-angle-left mr-1" aria-hidden="true"></i>Retour</a>
+                        <x-back-button :fallback="route('interrogation.index', ['classe' => $evaluation->cours->classe, 'cours' => $evaluation->cours, 'trimestre' => $trimestre])" />
                     @endif
                 </div>
 
