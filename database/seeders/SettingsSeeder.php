@@ -46,7 +46,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'system_version',
-                'value' => '1.1.0',
+                'value' => '1.2.0-alpha',
                 'type' => 'string',
                 'group' => 'general'
             ],

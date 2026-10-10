@@ -3,6 +3,27 @@
 return [
     'releases' => [
         [
+            'version' => '1.2.0-alpha',
+            'date' => '2026-10-10',
+            'groups' => [
+                'Navigation' => [
+                    'Bouton Retour uniforme sur toutes les pages : il ramene a la page d\'origine en conservant les filtres et la pagination.',
+                    'Ajout du bouton Retour sur les pages qui n\'en avaient pas (nouvelle classe, inscription d\'un eleve, import, nouvelle matiere, detail d\'un cours, fiche comptable).',
+                    'Apres la creation ou la modification d\'un eleve ou d\'une classe, retour automatique vers la liste.',
+                    'Un utilisateur connecte n\'est plus ramene sur la page de connexion par le bouton Precedent du navigateur.',
+                ],
+                'Identite de l\'etablissement' => [
+                    'Le tableau de bord affiche le nom complet de l\'etablissement.',
+                    'Le logo de l\'etablissement remplace celui d\'OneUI dans l\'onglet du navigateur et dans le menu lateral.',
+                ],
+                'Corrections' => [
+                    'Correction de l\'affichage des informations du pere, de la mere, du tuteur et de la sante d\'un eleve (donnees enregistrees en double encodage JSON).',
+                    'Correction de la redirection apres l\'ajout d\'une absence, qui menait a la liste des retards.',
+                    'Le message de confirmation d\'inscription d\'un eleve s\'affiche desormais comme un succes.',
+                ],
+            ],
+        ],
+        [
             'version' => '1.1.0',
             'date' => '2026-07-14',
             'groups' => [
